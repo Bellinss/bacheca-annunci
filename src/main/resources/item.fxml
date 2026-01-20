@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.Cursor?>
+
+<VBox fx:id="itemBox" alignment="CENTER" onMouseClicked="#handleItemClick"
+      prefHeight="220.0" prefWidth="180.0" spacing="5.0"
+      style="-fx-background-color: orange; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 0);"
+      xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="it.uniroma2.dicii.ispw.bachecaannunci.controller.ItemController">
+
+    <children>
+        <ImageView fx:id="imgView" fitHeight="100.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+            <image>
+                <Image url="@icons8-carrello-della-spesa-96.png" />
+            </image>
+        </ImageView>
+
+        <Label fx:id="nameLabel" alignment="CENTER" prefHeight="45.0" text="Nome Prodotto" textAlignment="CENTER" textFill="#000000" wrapText="true">
+            <font>
+                <Font name="System Bold" size="14.0" />
+            </font>
+            <padding>
+                <Insets left="5.0" right="5.0" />
+            </padding>
+        </Label>
+
+        <Label fx:id="priceLabel" text="€ 0.00" textFill="#000000">
+            <font>
+                <Font name="System Bold" size="16.0" />
+            </font>
+        </Label>
+    </children>
+
+    <padding>
+        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+    </padding>
+
+    <cursor>
+        <Cursor fx:constant="HAND" />
+    </cursor>
+</VBox>

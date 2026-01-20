@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="600.0" minWidth="800.0" style="-fx-background-color: #f4f4f4;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.uniroma2.dicii.ispw.bachecaannunci.controller.AdPageController">
+
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="10.0" style="-fx-background-color: orange; -fx-border-color: #cccccc; -fx-border-width: 0 0 1 0;" BorderPane.alignment="CENTER">
+            <padding>
+                <Insets bottom="15.0" left="20.0" right="20.0" top="15.0" />
+            </padding>
+            <children>
+                <Button fx:id="backButton" mnemonicParsing="false" style="-fx-background-color: transparent; -fx-border-color: #bdc3c7; -fx-border-radius: 5;" text="← Back to Home" textFill="#7f8c8d">
+                    <font>
+                        <Font name="System Bold" size="12.0" />
+                    </font>
+                    <cursor>
+                        <javafx.scene.Cursor fx:constant="HAND" />
+                    </cursor>
+                </Button>
+                <Region HBox.hgrow="ALWAYS" />
+                <Label text="Dettaglio Annuncio" textFill="#95a5a6">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </Label>
+            </children>
+        </HBox>
+    </top>
+
+    <center>
+        <HBox alignment="CENTER" spacing="40.0" BorderPane.alignment="CENTER">
+            <padding>
+                <Insets bottom="40.0" left="40.0" right="40.0" top="40.0" />
+            </padding>
+            <children>
+
+                <VBox alignment="CENTER" style="-fx-background-color: white; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 0); -fx-background-radius: 10;">
+                    <children>
+                        <ImageView fitHeight="300.0" fitWidth="300.0" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@icons8-carrello-della-spesa-96.png" />
+                            </image>
+                        </ImageView>
+                    </children>
+                    <padding>
+                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                    </padding>
+                </VBox>
+
+                <VBox maxWidth="400.0" spacing="15.0" HBox.hgrow="ALWAYS">
+                    <children>
+                        <Label fx:id="categoryLabel" text="CATEGORIA ..." textFill="#3498db">
+                            <font>
+                                <Font name="System Bold" size="10.0" />
+                            </font>
+                        </Label>
+
+                        <Label fx:id="titleLabel" text="Titolo dell'Oggetto Molto Lungo" textFill="#2c3e50" wrapText="true">
+                            <font>
+                                <Font name="System Bold" size="28.0" />
+                            </font>
+                        </Label>
+
+                        <Label fx:id="priceLabel" text="€ 00.00" textFill="#e67e22">
+                            <font>
+                                <Font size="24.0" />
+                            </font>
+                        </Label>
+
+                        <Separator prefWidth="200.0" />
+
+                        <Label text="Descrizione:" textFill="#7f8c8d">
+                            <font>
+                                <Font name="System Bold" size="12.0" />
+                            </font>
+                        </Label>
+
+                        <TextArea fx:id="descriptionArea" editable="false" prefHeight="150.0" prefWidth="200.0" style="-fx-background-color: transparent; -fx-control-inner-background: #f4f4f4;" text="Qui comparirà la descrizione dettagliata dell'oggetto inserita dal venditore. Lorem ipsum dolor sit amet." wrapText="true" />
+                        <Button fx:id="soldButton"
+                                text="Segna come VENDUTO"
+                                onAction="#handleMarkAsSold"
+                                visible="false" managed="false"
+                                style="-fx-background-color: #c0392b; -fx-text-fill: white; -fx-font-weight: bold; -fx-cursor: hand;"
+                                maxWidth="Infinity">
+                        </Button>
+
+                        <Region VBox.vgrow="ALWAYS" />
+
+                        <HBox spacing="10.0">
+                            <children>
+                                <Button fx:id="contactButton"
+                                        onAction="#handleContactSeller"
+                                        maxWidth="1.7976931348623157E308"
+                                        mnemonicParsing="false"
+                                        style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold;"
+                                        text="Contatta Venditore"
+                                        HBox.hgrow="ALWAYS">
+                                    <padding>
+                                        <Insets bottom="10.0" top="10.0" />
+                                    </padding>
+                                    <cursor>
+                                        <javafx.scene.Cursor fx:constant="HAND" />
+                                    </cursor>
+                                </Button>
+                                <Button fx:id="followButton"
+                                        mnemonicParsing="false"
+                                        onAction="#handleFollow"
+                                        text="Segui"
+                                        style="-fx-background-color: #ecf0f1; -fx-text-fill: #2c3e50;" />                            </children>
+                        </HBox>
+                    </children>
+                </VBox>
+            </children>
+        </HBox>
+    </center>
+</BorderPane>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox alignment="TOP_CENTER" prefHeight="500.0" prefWidth="600.0" spacing="15.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.uniroma2.dicii.ispw.bachecaannunci.controller.AdminHomeController">
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+    </padding>
+
+    <Label text="Pannello Amministratore" textFill="#2c3e50">
+        <font>
+            <Font name="System Bold" size="24.0" />
+        </font>
+    </Label>
+
+    <Separator prefWidth="200.0" />
+
+    <VBox alignment="CENTER_LEFT" spacing="10.0" style="-fx-background-color: #ecf0f1; -fx-padding: 15; -fx-background-radius: 5;">
+        <children>
+            <Label text="Gestione Categorie">
+                <font>
+                    <Font name="System Bold" size="14.0" />
+                </font>
+            </Label>
+            <Label text="Path Categoria:" />
+            <TextField fx:id="categoryPathField" />
+            <Label text="Nome Categoria:" />
+            <TextField fx:id="categoryNameField" promptText="Es. Arredamento" />
+            <Button onAction="#handleAddCategory" style="-fx-background-color: #27ae60; -fx-text-fill: white;" text="Aggiungi Categoria" />
+        </children>
+    </VBox>
+
+    <VBox alignment="CENTER_LEFT" spacing="10.0" style="-fx-background-color: #ecf0f1; -fx-padding: 15; -fx-background-radius: 5;">
+        <children>
+            <Label text="Report Vendite Utente">
+                <font>
+                    <Font name="System Bold" size="14.0" />
+                </font>
+            </Label>
+            <Label text="Username Utente:" />
+            <TextField fx:id="targetUserField" promptText="Es. mario.rossi" />
+            <Button onAction="#handleGenerateReport" style="-fx-background-color: #3498db; -fx-text-fill: white;" text="Genera Report" />
+
+            <TextArea fx:id="reportOutputArea" editable="false" prefHeight="100.0" promptText="I risultati appariranno qui..." wrapText="true" />
+        </children>
+    </VBox>
+
+    <Separator prefWidth="200.0" />
+    <Button onAction="#handleLogout" style="-fx-background-color: #c0392b; -fx-text-fill: white;" text="Logout" />
+
+</VBox>

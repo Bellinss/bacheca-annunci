@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox prefHeight="700.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.uniroma2.dicii.ispw.bachecaannunci.controller.RegistrationController">
+   <children>
+      <AnchorPane prefHeight="100.0" prefWidth="500.0" style="-fx-background-color: orange;">
+         <children>
+            <ImageView fitHeight="60.0" fitWidth="60.0" layoutY="5.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@icons8-carrello-della-spesa-96.png" />
+               </image>
+            </ImageView>
+            <Label layoutX="121.0" layoutY="20.0" text="Bacheca Elettronica di Annunci">
+               <font>
+                  <Font name="System Bold" size="20.0" />
+               </font>
+            </Label>
+         </children>
+      </AnchorPane>
+
+      <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS">
+         <content>
+            <VBox spacing="15.0">
+               <padding>
+                  <Insets bottom="30.0" left="50.0" right="50.0" top="20.0" />
+               </padding>
+               <children>
+                  <Label text="Informazioni Profilo" textFill="#7f8c8d">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Label>
+
+                  <VBox spacing="5.0">
+                     <children>
+                        <Label text="Username" />
+                        <TextField fx:id="usernameField" promptText="Inserisci un nome utente" />
+                     </children>
+                  </VBox>
+
+                  <VBox spacing="5.0">
+                     <children>
+                        <Label text="Password" />
+                        <PasswordField fx:id="passwordField" promptText="Inserisci password" />
+                     </children>
+                  </VBox>
+
+                  <Label text="Informazioni Personali" textFill="#7f8c8d">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                     <VBox.margin>
+                        <Insets top="10.0" />
+                     </VBox.margin>
+                  </Label>
+
+                  <HBox spacing="10.0">
+                     <children>
+                        <VBox HBox.hgrow="ALWAYS">
+                           <children>
+                              <Label text="Nome" />
+                              <TextField fx:id="nomeField" />
+                           </children>
+                        </VBox>
+                        <VBox HBox.hgrow="ALWAYS">
+                           <children>
+                              <Label text="Cognome" />
+                              <TextField fx:id="cognomeField" />
+                           </children>
+                        </VBox>
+                     </children>
+                  </HBox>
+
+                  <VBox spacing="5.0">
+                     <children>
+                        <Label text="Data di Nascita" />
+                        <TextField fx:id="dataNascitaField" promptText="dd/mm/yyyy" />
+                     </children>
+                  </VBox>
+
+                  <VBox spacing="5.0">
+                     <children>
+                        <Label text="Indirizzo di Residenza" />
+                        <TextField fx:id="residenzaField" />
+                     </children>
+                  </VBox>
+
+                  <VBox spacing="5.0">
+                     <children>
+                        <Label text="Indirizzo di Fatturazione (opzionale)" />
+                        <TextField fx:id="fatturazioneField" />
+                     </children>
+                  </VBox>
+
+                  <Label text="Tipo di Recapito Preferito" textFill="#7f8c8d">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                     <VBox.margin>
+                        <Insets top="10.0" />
+                     </VBox.margin>
+                  </Label>
+
+                  <HBox spacing="20.0">
+                     <children>
+                        <RadioButton fx:id="rbEmail" mnemonicParsing="false" selected="true" text="Email" />
+                        <RadioButton fx:id="rbCellulare" mnemonicParsing="false" text="Cellulare" />
+                     </children>
+                  </HBox>
+
+                  <VBox spacing="5.0">
+                     <children>
+                        <Label text="Indirizzo Email/Cellulare" />
+                        <TextField fx:id="recapitoField" promptText="e.g. email@example.com or 333-123-4567" />
+                     </children>
+                  </VBox>
+
+                  <VBox spacing="10.0">
+                     <VBox.margin>
+                        <Insets top="20.0" />
+                     </VBox.margin>
+                     <children>
+                        <Button fx:id="registerButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleRegister" prefHeight="40.0" style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold;" text="Registrati" />
+                        <Button fx:id="backButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="30.0" style="-fx-background-color: transparent; -fx-text-fill: #7f8c8d;" text="Torna al Login" />
+                     </children>
+                  </VBox>
+               </children>
+            </VBox>
+         </content>
+      </ScrollPane>
+   </children>
+</VBox>
