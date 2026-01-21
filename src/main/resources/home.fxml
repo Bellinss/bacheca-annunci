@@ -16,6 +16,7 @@
 <?import javafx.scene.text.Font?>
 
 <?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.CheckBox?>
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="600.0" minWidth="900.0" style="-fx-background-color: #f9f9f9;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.uniroma2.dicii.ispw.bachecaannunci.controller.HomeController">
 
    <top>
@@ -62,6 +63,8 @@
             <Label text="Categorie" textFill="#95a5a6" />
             <HBox spacing="10" alignment="CENTER_LEFT">
                <ComboBox fx:id="categoryComboBox" prefWidth="200.0" promptText="Seleziona Categoria" />
+
+               <CheckBox fx:id="onlyFollowedCheckBox" text="Solo seguiti" />
 
                <Button text="Applica Filtri" onAction="#handleApplyFilters" />
             </HBox>

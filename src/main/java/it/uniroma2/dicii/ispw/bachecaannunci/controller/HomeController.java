@@ -4,12 +4,14 @@ import it.uniroma2.dicii.ispw.bachecaannunci.exception.DAOException;
 import it.uniroma2.dicii.ispw.bachecaannunci.model.DAO.AdDAO;
 import it.uniroma2.dicii.ispw.bachecaannunci.model.DAO.CategoryDAO;
 import it.uniroma2.dicii.ispw.bachecaannunci.model.domain.AnnuncioBean;
+import it.uniroma2.dicii.ispw.bachecaannunci.model.domain.Credentials;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.TilePane;
@@ -31,6 +33,9 @@ public class HomeController implements Initializable {
 
     @FXML
     private ComboBox<String> categoryComboBox;
+
+    @FXML
+    private CheckBox onlyFollowedCheckBox;
 
     @FXML
     public void initialize(URL location, ResourceBundle resources) {
@@ -57,36 +62,6 @@ public class HomeController implements Initializable {
         }
     }
 
-    @FXML
-    private void handleApplyFilters() {
-        // Recupera la categoria selezionata
-        String selectedCat = categoryComboBox.getValue();
-
-        // Se è null o è "Tutte le categorie", ricarica tutto
-        if (selectedCat == null || selectedCat.equals("Tutte le categorie")) {
-            loadAds();
-            return;
-        }
-
-        try {
-            // Pulisce la griglia
-            adsContainer.getChildren().clear();
-
-            // Chiama il DAO per filtrare
-            List<AnnuncioBean> filteredAds = AdDAO.getInstance().findByCategory(selectedCat);
-
-            // Popola la griglia
-            populateGrid(filteredAds);
-
-            if(filteredAds.isEmpty()) {
-                showInfo("Nessun annuncio in questa categoria");
-            }
-
-        } catch (DAOException e) {
-            showError("Errore filtro: " + e.getMessage());
-        }
-    }
-
     // --- CARICAMENTO ANNUNCI ---
 
     private void loadAds() {
@@ -99,6 +74,66 @@ public class HomeController implements Initializable {
 
         } catch (DAOException e) {
             showError("Errore nel caricamento degli annunci: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    private void handleApplyFilters() {
+        try {
+            List<AnnuncioBean> risultati;
+
+            // Recupera gli input
+            boolean isOnlyFollowed = onlyFollowedCheckBox.isSelected();
+            String selectedCat = categoryComboBox.getValue();
+            String searchText = searchField.getText().trim();
+
+            // Controlliamo se è stata selezionata una categoria valida
+            boolean isCategorySelected = (selectedCat != null && !selectedCat.equals("Tutte le categorie") && !selectedCat.isEmpty());
+
+            Credentials user = Session.getInstance().getLoggedUser();
+
+            // --- LOGICA DI FILTRAGGIO ---
+
+            if (isOnlyFollowed) {
+                // CASO A: L'utente vuole vedere i seguiti
+                if (user == null) {
+                    showError("Devi effettuare il login per vedere gli annunci seguiti.");
+                    onlyFollowedCheckBox.setSelected(false);
+                    return;
+                }
+
+                if (isCategorySelected) {
+                    // 1. SEGUITI + CATEGORIA (AND)
+                    risultati = AdDAO.getInstance().findFollowedByCategory(user.getUsername(), selectedCat);
+                } else {
+                    // 2. SOLO SEGUITI
+                    risultati = AdDAO.getInstance().findFollowedAds(user.getUsername());
+                }
+
+            } else {
+                // CASO B: L'utente NON ha spuntato "Solo seguiti"
+                if (isCategorySelected) {
+                    // 3. SOLO CATEGORIA
+                    risultati = AdDAO.getInstance().findByCategory(selectedCat);
+                } else if (!searchText.isEmpty()) {
+                    // 4. SOLO RICERCA TESTUALE
+                    risultati = AdDAO.getInstance().findByString(searchText);
+                } else {
+                    // 5. NESSUN FILTRO (TUTTO)
+                    risultati = AdDAO.getInstance().findAll();
+                }
+            }
+
+            // Popola la griglia
+            populateGrid(risultati);
+
+            if (risultati.isEmpty()) {
+                // Opzionale: feedback visuale se non ci sono risultati
+                // new Alert(Alert.AlertType.INFORMATION, "Nessun annuncio trovato con questi criteri.").showAndWait();
+            }
+
+        } catch (DAOException e) {
+            showError("Errore filtro: " + e.getMessage());
         }
     }
 

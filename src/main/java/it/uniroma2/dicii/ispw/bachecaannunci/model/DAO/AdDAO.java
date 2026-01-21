@@ -242,4 +242,75 @@ public class AdDAO {
         }
         return risultati;
     }
+
+    public List<AnnuncioBean> findFollowedAds(String username) throws DAOException {
+        List<AnnuncioBean> annunci = new ArrayList<>();
+
+        // Chiamiamo la tua procedura esistente
+        String sql = "{call lista_annunci_seguiti(?)}";
+
+        try {
+            Connection conn = ConnectionFactory.getConnection();
+            try (CallableStatement cs = conn.prepareCall(sql)) {
+
+                // Passiamo lo username
+                cs.setString(1, username);
+
+                boolean hasResults = cs.execute();
+
+                if (hasResults) {
+                    try (ResultSet rs = cs.getResultSet()) {
+                        while (rs.next()) {
+                            // Creiamo il bean mappando i campi della tua query
+                            AnnuncioBean bean = new AnnuncioBean(
+                                    rs.getInt("Codice"),
+                                    rs.getString("Titolo"),
+                                    rs.getDouble("Importo"),
+                                    rs.getString("Descrizione"),
+                                    rs.getString("Utente"),
+                                    rs.getString("Categoria")
+                            );
+                            annunci.add(bean);
+                        }
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new DAOException("Errore recupero annunci seguiti: " + e.getMessage());
+        }
+        return annunci;
+    }
+
+    public List<AnnuncioBean> findFollowedByCategory(String username, String categoria) throws DAOException {
+        List<AnnuncioBean> risultati = new ArrayList<>();
+        String sql = "{call filtra_seguiti_e_categoria(?,?)}";
+
+        try {
+            Connection conn = ConnectionFactory.getConnection();
+            try (CallableStatement cs = conn.prepareCall(sql)) {
+                cs.setString(1, username);
+                cs.setString(2, categoria);
+
+                boolean hasResults = cs.execute();
+                if (hasResults) {
+                    try (ResultSet rs = cs.getResultSet()) {
+                        while (rs.next()) {
+                            AnnuncioBean bean = new AnnuncioBean(
+                                    rs.getInt("Codice"),
+                                    rs.getString("Titolo"),
+                                    rs.getDouble("Importo"),
+                                    rs.getString("Descrizione"),
+                                    rs.getString("Utente"),
+                                    rs.getString("Categoria")
+                            );
+                            risultati.add(bean);
+                        }
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new DAOException("Errore filtro combinato: " + e.getMessage());
+        }
+        return risultati;
+    }
 }
