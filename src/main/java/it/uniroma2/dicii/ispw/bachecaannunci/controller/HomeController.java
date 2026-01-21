@@ -128,8 +128,11 @@ public class HomeController implements Initializable {
             populateGrid(risultati);
 
             if (risultati.isEmpty()) {
-                // Opzionale: feedback visuale se non ci sono risultati
-                // new Alert(Alert.AlertType.INFORMATION, "Nessun annuncio trovato con questi criteri.").showAndWait();
+                new Alert(Alert.AlertType.INFORMATION, "Nessun annuncio trovato con questi criteri.").showAndWait();
+                categoryComboBox.getSelectionModel().selectFirst();
+                onlyFollowedCheckBox.setSelected(false);
+                searchField.clear();
+                loadAds();
             }
 
         } catch (DAOException e) {
