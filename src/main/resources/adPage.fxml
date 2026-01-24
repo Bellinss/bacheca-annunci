@@ -102,7 +102,7 @@
                         <HBox spacing="10.0">
                             <children>
                                 <Button fx:id="contactButton"
-                                        onAction="#handleContactSeller"
+                                        onAction="#handleContact"
                                         maxWidth="1.7976931348623157E308"
                                         mnemonicParsing="false"
                                         style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold;"

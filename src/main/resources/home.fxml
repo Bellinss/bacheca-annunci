@@ -36,7 +36,7 @@
             <Region HBox.hgrow="ALWAYS" />
 
             <TextField fx:id="searchField" prefHeight="35.0" prefWidth="350.0" promptText="Cerca annunci..." style="-fx-background-radius: 20; -fx-border-radius: 20;" />
-            <Button mnemonicParsing="false" onAction="#handleSearch" style="-fx-background-radius: 20; -fx-background-color: #ecf0f1;" text="Cerca" textFill="#2c3e50" />
+            <Button mnemonicParsing="false" onAction="#handleApplyFilters" style="-fx-background-radius: 20; -fx-background-color: #ecf0f1;" text="Cerca" textFill="#2c3e50" />
 
             <Region prefWidth="20.0" />
 

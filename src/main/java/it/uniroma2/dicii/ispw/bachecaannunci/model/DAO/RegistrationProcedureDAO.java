@@ -39,7 +39,7 @@ public class RegistrationProcedureDAO implements GenericProcedureDAO<Boolean> {
                 cs.setString(i++, user.getPassword());
                 cs.setString(i++, user.getNome());
                 cs.setString(i++, user.getCognome());
-                cs.setDate(i++, Date.valueOf(user.getDataNascita()));
+                cs.setDate(5, user.getDataNascita());
                 cs.setString(i++, user.getResidenza());
 
                 // --- INDIRIZZO DI FATTURAZIONE OPZIONALE ---

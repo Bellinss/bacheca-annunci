@@ -77,13 +77,11 @@ public class AdDAO {
     }
 
     // 2. SEGUI ANNUNCIO
-    public boolean seguiAnnuncio(int idAnnuncio) throws DAOException {
+    public boolean seguiAnnuncio(String username, int idAnnuncio) throws DAOException {
         try {
             Connection conn = ConnectionFactory.getConnection();
             Credentials loggedUser = Session.getInstance().getLoggedUser();
             if (loggedUser == null) throw new DAOException("Utente non loggato.");
-
-            String username = loggedUser.getUsername();
 
             try (CallableStatement cs = conn.prepareCall("{call segui_annuncio(?,?)}")) {
                 cs.setString(1, username);

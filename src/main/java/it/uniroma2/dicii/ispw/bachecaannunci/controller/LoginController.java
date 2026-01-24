@@ -1,35 +1,34 @@
 package it.uniroma2.dicii.ispw.bachecaannunci.controller;
 
-import it.uniroma2.dicii.ispw.bachecaannunci.model.domain.Credentials;
-import it.uniroma2.dicii.ispw.bachecaannunci.model.DAO.LoginProcedureDAO;
-import it.uniroma2.dicii.ispw.bachecaannunci.model.DAO.ConnectionFactory;
+import it.uniroma2.dicii.ispw.bachecaannunci.appcontroller.LoginAppController;
 import it.uniroma2.dicii.ispw.bachecaannunci.exception.DAOException;
-
+import it.uniroma2.dicii.ispw.bachecaannunci.model.domain.Credentials;
 import it.uniroma2.dicii.ispw.bachecaannunci.model.domain.Role;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextField;
-import javafx.scene.control.PasswordField;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+
 import java.io.IOException;
 import java.sql.SQLException;
 
 public class LoginController {
 
-    @FXML
-    private TextField usernameTextField;
-    @FXML
-    private PasswordField passwordTextField;
-    @FXML
-    private Button loginButton;
+    @FXML private TextField usernameTextField;
+    @FXML private PasswordField passwordTextField;
+    @FXML private Button loginButton;
+
+    // Riferimento al Controller Applicativo
+    private final LoginAppController appController = new LoginAppController();
 
     @FXML
     private void initialize() {
-        // Puoi usare il tasto Invio per fare il login
+        // Permette di premere Invio per fare il login
         loginButton.setDefaultButton(true);
         loginButton.setOnAction(e -> handleLogin());
     }
@@ -39,46 +38,46 @@ public class LoginController {
         String username = usernameTextField.getText();
         String password = passwordTextField.getText();
 
-        // 1. Validazione Input
+        // 1. Validazione Grafica
         if (username == null || username.isBlank() || password == null || password.isBlank()) {
-            new Alert(Alert.AlertType.WARNING, "Inserisci username e password").showAndWait();
+            showAlert(Alert.AlertType.WARNING, "Inserisci username e password");
             return;
         }
 
         try {
-            // 2. Chiamata al Database (UNA SOLA VOLTA!)
-            Credentials result = LoginProcedureDAO.getInstance().execute(username, password);
+            // 2. Delega all'AppController
+            Credentials cred = appController.login(username, password);
 
-            if (result == null) {
-                new Alert(Alert.AlertType.ERROR, "Credenziali errate. Riprova.").showAndWait();
+            if (cred == null) {
+                showAlert(Alert.AlertType.ERROR, "Credenziali errate. Username o password non valide.");
                 passwordTextField.clear();
                 return;
             }
 
-            // 3. Cambio Ruolo Database (Switch tra utente 'login', 'utente', 'amministratore' su MySQL)
-            ConnectionFactory.changeRole(result.getRole());
-
-            // 4. Salvataggio Sessione
-            Session.getInstance().setLoggedUser(result);
-
-            // 5. Reindirizzamento in base al Ruolo
-            String targetFxml = "/home.fxml"; // Default: Utente (Role = 2)
-
-            // Assumo che getRole() ritorni un oggetto Role che ha un metodo getId()
-            // 1 = Amministratore, 2 = Utente
-            if (result.getRole() == Role.AMMINISTRATORE) {
+            // 3. Navigazione in base al Ruolo (Logica di presentazione)
+            String targetFxml = "/home.fxml"; // Default: Utente
+            if (cred.getRole() == Role.AMMINISTRATORE) {
                 targetFxml = "/adminHome.fxml";
             }
 
-            // 6. Cambio Scena
             loadScene(targetFxml);
 
         } catch (DAOException | SQLException e) {
-            new Alert(Alert.AlertType.ERROR, "Errore Login: " + e.getMessage()).showAndWait();
+            showAlert(Alert.AlertType.ERROR, "Errore login: " + e.getMessage());
             e.printStackTrace();
         } catch (IOException e) {
-            new Alert(Alert.AlertType.ERROR, "Errore caricamento interfaccia: " + e.getMessage()).showAndWait();
+            showAlert(Alert.AlertType.ERROR, "Errore caricamento pagina: " + e.getMessage());
             e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void goToRegister() {
+        try {
+            loadScene("/register.fxml");
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Impossibile aprire la registrazione.");
         }
     }
 
@@ -90,12 +89,7 @@ public class LoginController {
         stage.show();
     }
 
-    @FXML
-    private void goToRegister() {
-        try {
-            loadScene("/register.fxml");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    private void showAlert(Alert.AlertType type, String msg) {
+        new Alert(type, msg).showAndWait();
     }
 }

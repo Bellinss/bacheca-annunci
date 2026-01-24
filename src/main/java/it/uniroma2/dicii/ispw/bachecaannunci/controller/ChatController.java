@@ -1,19 +1,17 @@
 package it.uniroma2.dicii.ispw.bachecaannunci.controller;
 
+import it.uniroma2.dicii.ispw.bachecaannunci.appcontroller.ChatAppController;
 import it.uniroma2.dicii.ispw.bachecaannunci.exception.DAOException;
-import it.uniroma2.dicii.ispw.bachecaannunci.model.DAO.MessageDAO;
-import it.uniroma2.dicii.ispw.bachecaannunci.model.domain.Credentials;
 import it.uniroma2.dicii.ispw.bachecaannunci.model.domain.MessageBean;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -26,8 +24,12 @@ public class ChatController {
     @FXML private TextArea inputArea;
     @FXML private Button backButton;
 
-    private String myUsername;
+    // Riferimento al Controller Applicativo
+    private final ChatAppController appController = new ChatAppController();
+
+    // Stato della View
     private String otherUsername;
+    private String myUsername; // Serve per la grafica (allineamento messaggi)
 
     @FXML
     public void initialize() {
@@ -35,47 +37,65 @@ public class ChatController {
             backButton.setOnAction(e -> goBack());
         }
 
-        // Imposto una "CellFactory" per personalizzare l'aspetto della lista
-        messageListView.setCellFactory(param -> new javafx.scene.control.ListCell<>() {
-            @Override
-            protected void updateItem(MessageBean item, boolean empty) {
-                super.updateItem(item, empty);
+        // Recuperiamo subito chi siamo per gestire l'allineamento nella lista
+        this.myUsername = appController.getLoggedUsername();
 
-                if (empty || item == null) {
+        // Configurazione CellFactory per visualizzare i messaggi (Grafica pura)
+        messageListView.setCellFactory(param -> new ListCell<>() {
+            @Override
+            protected void updateItem(MessageBean msg, boolean empty) {
+                super.updateItem(msg, empty);
+                if (empty || msg == null) {
+                    setGraphic(null);
                     setText(null);
-                    setStyle("");
                 } else {
-                    // Se il mittente sono io (utente loggato)
-                    if (item.getMittente().equals(myUsername)) {
-                        setText(item.getTesto() + " (Io)" + "\n " + item.getOra().toString() + " " + item.getData().toString());
-                        // Allineato a DESTRA, Blu
-                        setStyle("-fx-alignment: CENTER-RIGHT; -fx-text-fill: #2980b9; -fx-font-weight: bold;");
+                    // Creazione Layout Grafico del singolo messaggio
+                    VBox bubble = new VBox(5);
+                    Label msgText = new Label(msg.getTesto());
+                    msgText.setWrapText(true);
+                    msgText.setMaxWidth(250);
+
+                    Label dateLabel = new Label(msg.getData().toString());
+                    dateLabel.setStyle("-fx-font-size: 9px; -fx-text-fill: gray;");
+
+                    bubble.getChildren().addAll(msgText, dateLabel);
+
+                    // Logica di visualizzazione: Io a destra, Altri a sinistra
+                    boolean isMe = msg.getMittente().equals(myUsername);
+
+                    if (isMe) {
+                        bubble.setStyle("-fx-background-color: #dcf8c6; -fx-padding: 10; -fx-background-radius: 10;");
+                        HBox container = new HBox(bubble);
+                        container.setAlignment(Pos.CENTER_RIGHT);
+                        setGraphic(container);
                     } else {
-                        // Se il mittente è l'altro
-                        setText(item.getTesto() + " (" + item.getMittente() + ")" + "\n " + item.getOra().toString() + " " + item.getData().toString());
-                        // Allineato a SINISTRA, Nero
-                        setStyle("-fx-alignment: CENTER-LEFT; -fx-text-fill: black;");
+                        bubble.setStyle("-fx-background-color: white; -fx-padding: 10; -fx-background-radius: 10; -fx-border-color: #ddd; -fx-border-radius: 10;");
+                        HBox container = new HBox(bubble);
+                        container.setAlignment(Pos.CENTER_LEFT);
+                        setGraphic(container);
                     }
                 }
             }
         });
     }
 
-    // Metodo fondamentale per passare i dati da AdPage a qui
-    public void initData(String recipientUsername) {
-        this.myUsername = Session.getInstance().getLoggedUser().getUsername();
-        this.otherUsername = recipientUsername;
-
-        headerLabel.setText("Conversazione con " + otherUsername);
-
+    // Metodo chiamato da chi apre la chat (es. AdPageController)
+    public void initChat(String seller, int adId, String adTitle) {
+        this.otherUsername = seller;
+        if (headerLabel != null) {
+            headerLabel.setText("Chat con " + seller + " - " + adTitle);
+        }
         loadMessages();
     }
 
     private void loadMessages() {
         try {
-            List<MessageBean> msgs = MessageDAO.getInstance().retrieveMessages(myUsername, otherUsername);
+            // Delega all'AppController il recupero dati
+            List<MessageBean> msgs = appController.getMessages(otherUsername);
+
             messageListView.setItems(FXCollections.observableArrayList(msgs));
-            // Scorrere in fondo
+
+            // Scroll automatico in basso
             if (!msgs.isEmpty()) {
                 messageListView.scrollTo(msgs.size() - 1);
             }
@@ -90,10 +110,10 @@ public class ChatController {
         if (text.isEmpty()) return;
 
         try {
-            // Usa il DAO esistente per inviare
-            MessageDAO.getInstance().inviaMessaggio(myUsername, otherUsername, text);
+            // Delega all'AppController l'invio
+            appController.sendMessage(otherUsername, text);
 
-            // Pulisci input e ricarica la lista per vedere il nuovo messaggio
+            // Aggiorna UI
             inputArea.clear();
             loadMessages();
 
@@ -104,7 +124,7 @@ public class ChatController {
 
     private void goBack() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/home.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/home.fxml")); // o adPage.fxml
             Parent root = loader.load();
             Stage stage = (Stage) backButton.getScene().getWindow();
             stage.setScene(new Scene(root));

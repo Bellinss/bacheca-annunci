@@ -1,10 +1,8 @@
 package it.uniroma2.dicii.ispw.bachecaannunci.controller;
 
+import it.uniroma2.dicii.ispw.bachecaannunci.appcontroller.HomeAppController;
 import it.uniroma2.dicii.ispw.bachecaannunci.exception.DAOException;
-import it.uniroma2.dicii.ispw.bachecaannunci.model.DAO.AdDAO;
-import it.uniroma2.dicii.ispw.bachecaannunci.model.DAO.CategoryDAO;
 import it.uniroma2.dicii.ispw.bachecaannunci.model.domain.AnnuncioBean;
-import it.uniroma2.dicii.ispw.bachecaannunci.model.domain.Credentials;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -25,205 +23,103 @@ import java.util.ResourceBundle;
 
 public class HomeController implements Initializable {
 
-    @FXML
-    private TilePane adsContainer;
+    @FXML private TilePane adsContainer;
+    @FXML private TextField searchField;
+    @FXML private ComboBox<String> categoryComboBox;
+    @FXML private CheckBox onlyFollowedCheckBox;
 
-    @FXML
-    private TextField searchField;
+    // Riferimento al Controller Applicativo
+    private final HomeAppController appController = new HomeAppController();
 
-    @FXML
-    private ComboBox<String> categoryComboBox;
-
-    @FXML
-    private CheckBox onlyFollowedCheckBox;
-
-    @FXML
+    @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // 1. Carica le categorie nel menu a tendina
-        loadCategories();
-
-        // 2. Carica tutti gli annunci
-        loadAds();
-    }
-
-    private void loadCategories() {
         try {
-            List<String> categorie = CategoryDAO.getInstance().findAllNames();
-
-            // Aggiungo un'opzione per resettare il filtro
+            // 1. Carica le categorie tramite AppController
             categoryComboBox.getItems().add("Tutte le categorie");
-            categoryComboBox.getItems().addAll(categorie);
-
-            // Seleziona "Tutte" di default
+            categoryComboBox.getItems().addAll(appController.getCategories());
             categoryComboBox.getSelectionModel().selectFirst();
 
-        } catch (DAOException e) {
-            showError("Impossibile caricare le categorie.");
-        }
-    }
-
-    // --- CARICAMENTO ANNUNCI ---
-
-    private void loadAds() {
-        try {
-            // 1. Recupera la lista dal Database.
-            List<AnnuncioBean> annunci = AdDAO.getInstance().findAll();
-
-            // 2. Popola la griglia grafica
-            populateGrid(annunci);
+            // 2. Carica gli annunci iniziali
+            populateGrid(appController.getAllAds());
 
         } catch (DAOException e) {
-            showError("Errore nel caricamento degli annunci: " + e.getMessage());
+            showError("Errore durante l'inizializzazione: " + e.getMessage());
         }
     }
 
     @FXML
     private void handleApplyFilters() {
         try {
-            List<AnnuncioBean> risultati;
+            // Delega la logica di filtro all'AppController
+            List<AnnuncioBean> risultati = appController.filterAds(
+                    categoryComboBox.getValue(),
+                    searchField.getText().trim(),
+                    onlyFollowedCheckBox.isSelected()
+            );
 
-            // Recupera gli input
-            boolean isOnlyFollowed = onlyFollowedCheckBox.isSelected();
-            String selectedCat = categoryComboBox.getValue();
-            String searchText = searchField.getText().trim();
-
-            // Controlliamo se è stata selezionata una categoria valida
-            boolean isCategorySelected = (selectedCat != null && !selectedCat.equals("Tutte le categorie") && !selectedCat.isEmpty());
-
-            Credentials user = Session.getInstance().getLoggedUser();
-
-            // --- LOGICA DI FILTRAGGIO ---
-
-            if (isOnlyFollowed) {
-                // CASO A: L'utente vuole vedere i seguiti
-                if (user == null) {
-                    showError("Devi effettuare il login per vedere gli annunci seguiti.");
-                    onlyFollowedCheckBox.setSelected(false);
-                    return;
-                }
-
-                if (isCategorySelected) {
-                    // 1. SEGUITI + CATEGORIA (AND)
-                    risultati = AdDAO.getInstance().findFollowedByCategory(user.getUsername(), selectedCat);
-                } else {
-                    // 2. SOLO SEGUITI
-                    risultati = AdDAO.getInstance().findFollowedAds(user.getUsername());
-                }
-
-            } else {
-                // CASO B: L'utente NON ha spuntato "Solo seguiti"
-                if (isCategorySelected) {
-                    // 3. SOLO CATEGORIA
-                    risultati = AdDAO.getInstance().findByCategory(selectedCat);
-                } else if (!searchText.isEmpty()) {
-                    // 4. SOLO RICERCA TESTUALE
-                    risultati = AdDAO.getInstance().findByString(searchText);
-                } else {
-                    // 5. NESSUN FILTRO (TUTTO)
-                    risultati = AdDAO.getInstance().findAll();
-                }
-            }
-
-            // Popola la griglia
+            // Aggiorna la vista
             populateGrid(risultati);
 
             if (risultati.isEmpty()) {
-                new Alert(Alert.AlertType.INFORMATION, "Nessun annuncio trovato con questi criteri.").showAndWait();
-                categoryComboBox.getSelectionModel().selectFirst();
+                showInfo("Nessun annuncio trovato con questi criteri.");
+            }
+
+        } catch (DAOException e) {
+            // Gestione specifica se l'utente non è loggato ma ha chiesto i preferiti
+            if (e.getMessage().contains("login")) {
                 onlyFollowedCheckBox.setSelected(false);
-                searchField.clear();
-                loadAds();
+                showError(e.getMessage());
+            } else {
+                showError("Errore nel filtraggio: " + e.getMessage());
             }
-
-        } catch (DAOException e) {
-            showError("Errore filtro: " + e.getMessage());
         }
     }
-
-    @FXML
-    private void handleSearch() {
-        String query = searchField.getText().trim();
-
-        // Se la barra è vuota, ricarica tutti gli annunci
-        if (query.isEmpty()) {
-            loadAds();
-            return;
-        }
-
-        try {
-            // Cerca nel DB filtrando per la stringa
-            List<AnnuncioBean> risultati = AdDAO.getInstance().findByString(query);
-
-            // Aggiorna la griglia con i soli risultati trovati
-            populateGrid(risultati);
-
-            if (risultati.isEmpty()) {
-               showInfo("Nessun annuncio trovato per: " + query);
-            }
-
-        } catch (DAOException e) {
-            showError("Errore nella ricerca: " + e.getMessage());
-        }
-    }
-
-    private void populateGrid(List<AnnuncioBean> annunci) {
-        // Rimuove visivamente anche gli annunci che sono stati appena venduti.
-        adsContainer.getChildren().clear();
-
-        try {
-            for (AnnuncioBean annuncio : annunci) {
-                // Carica il singolo blocchetto (item.fxml)
-                FXMLLoader fxmlLoader = new FXMLLoader();
-                fxmlLoader.setLocation(getClass().getResource("/item.fxml"));
-                VBox cardBox = fxmlLoader.load();
-
-                // Passa i dati al controller del blocchetto
-                ItemController itemController = fxmlLoader.getController();
-                itemController.setData(annuncio);
-
-                // Aggiungi alla griglia
-                adsContainer.getChildren().add(cardBox);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            showError("Errore grafico nel caricamento delle card.");
-        }
-    }
-
-    // --- NAVIGAZIONE ---
 
     @FXML
     private void goToSell() {
-        // Controllo Login: Solo chi è registrato può vendere
-        if (Session.getInstance().getLoggedUser() == null) {
-            new Alert(Alert.AlertType.WARNING, "Devi effettuare il login per pubblicare un annuncio.").showAndWait();
+        // Usa l'AppController per verificare il login
+        if (!appController.isUserLogged()) {
+            showError("Devi fare il login per vendere un oggetto.");
             return;
         }
-
         changeScene("/sell.fxml");
     }
 
     @FXML
     private void goToInbox() {
-        // Controllo Login: Solo chi è registrato può vedere i messaggi
-        if (Session.getInstance().getLoggedUser() == null) {
-            new Alert(Alert.AlertType.WARNING, "Devi fare il login per vedere i messaggi.").showAndWait();
+        if (!appController.isUserLogged()) {
+            showError("Devi fare il login per vedere i messaggi.");
             return;
         }
-
         changeScene("/inbox.fxml");
     }
 
     @FXML
     private void handleLogout() {
-        // 1. Logout Logico
-        Session.getInstance().setLoggedUser(null);
-
-        // 2. Logout Grafico (Torna al login)
+        appController.logout();
         changeScene("/login.fxml");
     }
 
-    // Metodo Helper per cambiare scena ed evitare duplicazione di codice try-catch
+    // --- Metodi puramente grafici ---
+
+    private void populateGrid(List<AnnuncioBean> annunci) {
+        adsContainer.getChildren().clear();
+        try {
+            for (AnnuncioBean annuncio : annunci) {
+                FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/item.fxml"));
+                VBox cardBox = fxmlLoader.load();
+
+                ItemController itemController = fxmlLoader.getController();
+                itemController.setData(annuncio);
+
+                adsContainer.getChildren().add(cardBox);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            showError("Errore nel caricamento delle card annuncio.");
+        }
+    }
+
     private void changeScene(String fxmlFile) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
@@ -241,7 +137,6 @@ public class HomeController implements Initializable {
         new Alert(Alert.AlertType.ERROR, msg).showAndWait();
     }
 
-    // Aggiungi questo metodo per gestire messaggi informativi
     private void showInfo(String msg) {
         new Alert(Alert.AlertType.INFORMATION, msg).showAndWait();
     }

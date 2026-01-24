@@ -1,8 +1,7 @@
 package it.uniroma2.dicii.ispw.bachecaannunci.controller;
 
+import it.uniroma2.dicii.ispw.bachecaannunci.appcontroller.AdminAppController;
 import it.uniroma2.dicii.ispw.bachecaannunci.exception.DAOException;
-import it.uniroma2.dicii.ispw.bachecaannunci.model.DAO.CategoryDAO;
-import it.uniroma2.dicii.ispw.bachecaannunci.model.DAO.ReportDAO;
 import it.uniroma2.dicii.ispw.bachecaannunci.model.domain.ReportBean;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -22,21 +21,32 @@ public class AdminHomeController {
     @FXML private TextField targetUserField;
     @FXML private TextArea reportOutputArea;
 
+    // Riferimento al Controller Applicativo
+    private final AdminAppController appController = new AdminAppController();
+
     @FXML
     private void handleAddCategory() {
+        // 1. Recupero dati dalla GUI
         String path = categoryPathField.getText().trim();
         String nome = categoryNameField.getText().trim();
+
+        // 2. Validazione sintattica (GUI)
         if (path.isEmpty() || nome.isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, "Inserisci un nome per la categoria.");
+            showAlert(Alert.AlertType.WARNING, "Inserisci sia Path che Nome per la categoria.");
             return;
         }
 
         try {
-            CategoryDAO.getInstance().addCategory(path, nome);
+            // 3. Delega all'Applicativo
+            appController.addCategory(path, nome);
+
+            // 4. Aggiornamento GUI (Successo)
             showAlert(Alert.AlertType.INFORMATION, "Categoria '" + nome + "' aggiunta con successo!");
             categoryPathField.clear();
             categoryNameField.clear();
+
         } catch (DAOException e) {
+            // 5. Gestione Errori
             showAlert(Alert.AlertType.ERROR, "Errore: " + e.getMessage());
         }
     }
@@ -44,14 +54,17 @@ public class AdminHomeController {
     @FXML
     private void handleGenerateReport() {
         String username = targetUserField.getText().trim();
+
         if (username.isEmpty()) {
             showAlert(Alert.AlertType.WARNING, "Inserisci uno username.");
             return;
         }
 
         try {
-            ReportBean report = ReportDAO.getInstance().generateReport(username);
+            // Chiamata all'Applicativo
+            ReportBean report = appController.generateUserReport(username);
 
+            // Aggiornamento GUI
             if (report != null) {
                 reportOutputArea.setText(report.toString());
             } else {
@@ -59,20 +72,23 @@ public class AdminHomeController {
             }
 
         } catch (DAOException e) {
-            reportOutputArea.setText("Errore: " + e.getMessage());
+            reportOutputArea.setText("Errore generazione report: " + e.getMessage());
         }
     }
 
     @FXML
     private void handleLogout() {
-        Session.getInstance().setLoggedUser(null);
+        // Chiamata all'Applicativo per pulire la sessione
+        appController.logout();
+
+        // Navigazione (compito del controller grafico)
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/login.fxml"));
             Parent root = loader.load();
             Stage stage = (Stage) categoryNameField.getScene().getWindow();
             stage.setScene(new Scene(root));
         } catch (IOException e) {
-            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Errore durante il logout: " + e.getMessage());
         }
     }
 
