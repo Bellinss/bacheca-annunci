@@ -46,7 +46,7 @@ public class RegistrationController {
             rbEmail.setSelected(true); // Default
         }
 
-        // 2. Setup Bottone "Torna al Login" (FIX)
+        // 2. Setup Bottone "Torna al Login"
         if (backButton != null) {
             backButton.setOnAction(e -> goToLogin());
         }
