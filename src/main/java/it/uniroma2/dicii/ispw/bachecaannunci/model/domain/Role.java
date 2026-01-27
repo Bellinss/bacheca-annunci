@@ -1,9 +1,12 @@
 package it.uniroma2.dicii.ispw.bachecaannunci.model.domain;
 
-public enum Role {
+import java.io.Serializable;
+
+public enum Role implements Serializable {
     AMMINISTRATORE(1),
     UTENTE(2);
 
+    private static final long serialVersionUID = 1L;
     private final int id;
 
     private Role(int id) {

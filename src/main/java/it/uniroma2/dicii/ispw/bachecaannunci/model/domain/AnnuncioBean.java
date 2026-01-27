@@ -1,6 +1,11 @@
 package it.uniroma2.dicii.ispw.bachecaannunci.model.domain;
 
-public class AnnuncioBean {
+import java.io.Serializable;
+
+public class AnnuncioBean implements  Serializable {
+
+    private static final long serialVersionUID = 1L;
+
     private int codice;
     private String titolo;
     private double importo;

@@ -2,24 +2,21 @@ package it.uniroma2.dicii.ispw.bachecaannunci.appcontroller;
 
 import it.uniroma2.dicii.ispw.bachecaannunci.controller.Session;
 import it.uniroma2.dicii.ispw.bachecaannunci.exception.DAOException;
-import it.uniroma2.dicii.ispw.bachecaannunci.model.DAO.CategoryDAO;
-import it.uniroma2.dicii.ispw.bachecaannunci.model.DAO.ReportDAO;
+import it.uniroma2.dicii.ispw.bachecaannunci.model.DAO.DAOFactory;
 import it.uniroma2.dicii.ispw.bachecaannunci.model.domain.ReportBean;
 
 public class AdminAppController {
 
     public void addCategory(String path, String nome) throws DAOException {
-        // Logica applicativa: delega al DAO l'inserimento
-        CategoryDAO.getInstance().addCategory(path, nome);
+        DAOFactory.getCategoryDAO().addCategory(path, nome);
     }
 
     public ReportBean generateUserReport(String username) throws DAOException {
-        // Logica applicativa: recupera il report
-        return ReportDAO.getInstance().generateReport(username);
+        return DAOFactory.getReportDAO().generateReport(username);
     }
 
     public void logout() {
-        // Logica applicativa: pulizia sessione
+        // Logica di sessione per il logout
         Session.getInstance().setLoggedUser(null);
     }
 }

@@ -1,8 +1,9 @@
 package it.uniroma2.dicii.ispw.bachecaannunci.model.domain;
 
 import java.sql.Date;
+import java.io.Serializable;
 
-public class UserBean {
+public class UserBean implements Serializable {
     private String username;
     private String password;
     private String nome;
@@ -12,6 +13,8 @@ public class UserBean {
     private String fatturazione;
     private String tipoRecapito;
     private String recapito;
+
+    private static final long serialVersionUID = 1L;
 
     // 1. Costruttore Vuoto (Fondamentale per i Bean)
     public UserBean() {}

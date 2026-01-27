@@ -2,7 +2,7 @@ package it.uniroma2.dicii.ispw.bachecaannunci.appcontroller;
 
 import it.uniroma2.dicii.ispw.bachecaannunci.controller.Session;
 import it.uniroma2.dicii.ispw.bachecaannunci.exception.DAOException;
-import it.uniroma2.dicii.ispw.bachecaannunci.model.DAO.MessageDAO;
+import it.uniroma2.dicii.ispw.bachecaannunci.model.DAO.DAOFactory;
 import it.uniroma2.dicii.ispw.bachecaannunci.model.domain.Credentials;
 import it.uniroma2.dicii.ispw.bachecaannunci.model.domain.MessageBean;
 
@@ -21,7 +21,7 @@ public class ChatAppController {
         String myUser = getLoggedUsername();
         if (myUser == null) throw new DAOException("Utente non loggato.");
 
-        return MessageDAO.getInstance().retrieveMessages(myUser, otherUser);
+        return DAOFactory.getMessageDAO().retrieveMessages(myUser, otherUser);
     }
 
     // Invia un messaggio
@@ -29,7 +29,6 @@ public class ChatAppController {
         String myUser = getLoggedUsername();
         if (myUser == null) throw new DAOException("Utente non loggato.");
 
-        // Chiama il DAO (adatta i parametri se la tua procedura richiede anche ID annuncio)
-        MessageDAO.getInstance().inviaMessaggio(myUser, otherUser, text);
+        DAOFactory.getMessageDAO().inviaMessaggio(myUser, otherUser, text);
     }
 }

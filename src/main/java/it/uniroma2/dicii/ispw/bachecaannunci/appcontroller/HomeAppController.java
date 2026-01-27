@@ -2,24 +2,24 @@ package it.uniroma2.dicii.ispw.bachecaannunci.appcontroller;
 
 import it.uniroma2.dicii.ispw.bachecaannunci.controller.Session;
 import it.uniroma2.dicii.ispw.bachecaannunci.exception.DAOException;
-import it.uniroma2.dicii.ispw.bachecaannunci.model.DAO.AdDAO;
-import it.uniroma2.dicii.ispw.bachecaannunci.model.DAO.CategoryDAO;
+import it.uniroma2.dicii.ispw.bachecaannunci.model.DAO.DAOFactory;
 import it.uniroma2.dicii.ispw.bachecaannunci.model.domain.AnnuncioBean;
 import it.uniroma2.dicii.ispw.bachecaannunci.model.domain.Credentials;
-import it.uniroma2.dicii.ispw.bachecaannunci.model.DAO.NotificationDAO;
 import it.uniroma2.dicii.ispw.bachecaannunci.model.domain.NotificationBean;
-import java.util.Collections;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class HomeAppController {
 
     public List<String> getCategories() throws DAOException {
-        return CategoryDAO.getInstance().findAllNames();
+        // 1. USA FACTORY PER CATEGORIE
+        return DAOFactory.getCategoryDAO().findAllNames();
     }
 
     public List<AnnuncioBean> getAllAds() throws DAOException {
-        return AdDAO.getInstance().findAll();
+        // 2. USA FACTORY: Tutti gli annunci
+        return DAOFactory.getAdDAO().findAll();
     }
 
     public boolean isUserLogged() {
@@ -33,7 +33,6 @@ public class HomeAppController {
     public List<AnnuncioBean> filterAds(String category, String text, boolean onlyFollowed) throws DAOException {
         Credentials user = Session.getInstance().getLoggedUser();
 
-        // Verifica se è stata selezionata una categoria valida (diversa da null, vuota o "Tutte")
         boolean hasCategory = (category != null && !category.equals("Tutte le categorie") && !category.isEmpty());
 
         // CASO 1: L'utente vuole vedere solo i seguiti
@@ -43,37 +42,41 @@ public class HomeAppController {
             }
 
             if (hasCategory) {
-                // Filtro combinato: Seguiti AND Categoria
-                return AdDAO.getInstance().findFollowedByCategory(user.getUsername(), category);
+                // 3. USA FACTORY: Filtro combinato (Seguiti + Categoria)
+                return DAOFactory.getAdDAO().findFollowedByCategory(user.getUsername(), category);
             } else {
-                // Solo Seguiti
-                return AdDAO.getInstance().findFollowedAds(user.getUsername());
+                // 4. USA FACTORY: Solo Seguiti
+                return DAOFactory.getAdDAO().findFollowedAds(user.getUsername());
             }
         }
 
-        // CASO 2: Filtri standard (tutti gli annunci, seguiti o meno)
+        // CASO 2: Filtri standard
         if (hasCategory) {
-            return AdDAO.getInstance().findByCategory(category);
+            // 5. USA FACTORY: Filtro Categoria
+            return DAOFactory.getAdDAO().findByCategory(category);
+
         } else if (text != null && !text.isEmpty()) {
-            return AdDAO.getInstance().findByString(text);
+            // 6. USA FACTORY: Filtro Testo
+            return DAOFactory.getAdDAO().findByString(text);
+
         } else {
-            // Nessun filtro
-            return AdDAO.getInstance().findAll();
+            // 7. USA FACTORY: Nessun filtro (Tutti)
+            return DAOFactory.getAdDAO().findAll();
         }
     }
 
     public List<NotificationBean> getNotifications() throws DAOException {
         Credentials user = Session.getInstance().getLoggedUser();
-        // Se l'utente non è loggato, non ha notifiche
-        if (user == null) return Collections.emptyList();
+        if (user == null) return new ArrayList<>();
 
-        return NotificationDAO.getInstance().retrieveNotifications(user.getUsername());
+        return DAOFactory.getNotificationDAO().retrieveNotifications(user.getUsername());
     }
 
     public void clearAllNotifications() throws DAOException {
         Credentials user = Session.getInstance().getLoggedUser();
         if (user != null) {
-            NotificationDAO.getInstance().clearNotifications(user.getUsername());
+            // 8. USA FACTORY PER NOTIFICHE
+            DAOFactory.getNotificationDAO().clearNotifications(user.getUsername());
         }
     }
 }

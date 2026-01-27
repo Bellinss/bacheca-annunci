@@ -1,4 +1,4 @@
-package it.uniroma2.dicii.ispw.bachecaannunci.model.DAO;
+package it.uniroma2.dicii.ispw.bachecaannunci.model.MySQL;
 
 import it.uniroma2.dicii.ispw.bachecaannunci.model.domain.Role;
 import java.io.FileInputStream;

@@ -1,6 +1,11 @@
 package it.uniroma2.dicii.ispw.bachecaannunci.model.domain;
 
-public class NoteBean {
+import java.io.Serializable;
+
+public class NoteBean implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
     private int id;
     private String testo;
     private int idAnnuncio;
@@ -11,7 +16,19 @@ public class NoteBean {
         this.idAnnuncio = idAnnuncio;
     }
 
-    public String getTesto() { return testo; }
+    // --- GETTERS AGGIUNTI PER LA DEMO VERSION ---
+
+    public int getId() {
+        return id;
+    }
+
+    public int getIdAnnuncio() {
+        return idAnnuncio;
+    }
+
+    public String getTesto() {
+        return testo;
+    }
 
     @Override
     public String toString() {

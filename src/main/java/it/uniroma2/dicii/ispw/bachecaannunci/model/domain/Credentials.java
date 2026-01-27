@@ -1,6 +1,10 @@
 package it.uniroma2.dicii.ispw.bachecaannunci.model.domain;
 
-public class Credentials {
+import java.io.Serializable;
+
+public class Credentials implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private final String username;
     private final String password;

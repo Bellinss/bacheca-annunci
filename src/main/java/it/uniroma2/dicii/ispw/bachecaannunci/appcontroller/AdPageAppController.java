@@ -2,7 +2,7 @@ package it.uniroma2.dicii.ispw.bachecaannunci.appcontroller;
 
 import it.uniroma2.dicii.ispw.bachecaannunci.controller.Session;
 import it.uniroma2.dicii.ispw.bachecaannunci.exception.DAOException;
-import it.uniroma2.dicii.ispw.bachecaannunci.model.DAO.AdDAO;
+import it.uniroma2.dicii.ispw.bachecaannunci.model.DAO.DAOFactory;
 import it.uniroma2.dicii.ispw.bachecaannunci.model.domain.Credentials;
 
 public class AdPageAppController {
@@ -19,27 +19,28 @@ public class AdPageAppController {
         return currentUser.getUsername().equals(sellerUsername);
     }
 
-    // Segna l'annuncio come venduto nel DB
+    // Segna l'annuncio come venduto nel DB (o nel File System)
     public void markAsSold(int adId) throws DAOException {
         Credentials user = Session.getInstance().getLoggedUser();
         if (user == null) throw new DAOException("Utente non loggato.");
+        DAOFactory.getAdDAO().markAsSold(adId, user.getUsername());
 
-        AdDAO.getInstance().markAsSold(adId, user.getUsername());
+        // 2. INVIA NOTIFICA MANUALE (Perché nella Demo non ci sono i trigger)
+        String testoNotifica = "Complimenti! Hai venduto l'oggetto con ID " + adId;
+        DAOFactory.getNotificationDAO().addNotification(user.getUsername(), testoNotifica);
     }
 
     // Aggiunge l'annuncio ai preferiti
     public boolean followAd(int adId) throws DAOException {
         Credentials user = Session.getInstance().getLoggedUser();
         if (user == null) throw new DAOException("Devi effettuare il login per seguire un annuncio.");
-
-        return AdDAO.getInstance().seguiAnnuncio(user.getUsername(), adId);
+        return DAOFactory.getAdDAO().seguiAnnuncio(user.getUsername(), adId);
     }
 
     // Controlla se l'annuncio è già seguito
     public boolean isFollowing(int adId) throws DAOException {
         Credentials user = Session.getInstance().getLoggedUser();
         if (user == null) return false;
-
-        return AdDAO.getInstance().isFollowing(user.getUsername(), adId);
+        return DAOFactory.getAdDAO().isFollowing(user.getUsername(), adId);
     }
 }

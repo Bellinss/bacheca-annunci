@@ -2,7 +2,7 @@ package it.uniroma2.dicii.ispw.bachecaannunci.appcontroller;
 
 import it.uniroma2.dicii.ispw.bachecaannunci.controller.Session;
 import it.uniroma2.dicii.ispw.bachecaannunci.exception.DAOException;
-import it.uniroma2.dicii.ispw.bachecaannunci.model.DAO.MessageDAO;
+import it.uniroma2.dicii.ispw.bachecaannunci.model.DAO.DAOFactory;
 import it.uniroma2.dicii.ispw.bachecaannunci.model.domain.Credentials;
 
 import java.util.Collections;
@@ -14,12 +14,10 @@ public class InboxAppController {
         // Recupera l'utente dalla sessione
         Credentials user = Session.getInstance().getLoggedUser();
 
-        // Se non c'è utente loggato, ritorna lista vuota (o lancia eccezione a seconda delle preferenze)
+        // Se non c'è utente loggato, ritorna lista vuota
         if (user == null) {
             return Collections.emptyList();
         }
-
-        // Chiama il DAO per ottenere la lista degli interlocutori
-        return MessageDAO.getInstance().getActiveConversations(user.getUsername());
+        return DAOFactory.getMessageDAO().getActiveConversations(user.getUsername());
     }
 }

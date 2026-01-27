@@ -1,8 +1,12 @@
 package it.uniroma2.dicii.ispw.bachecaannunci.model.domain;
 
 import java.sql.Date;
+import java.io.Serializable;
 
-public class ReportBean {
+public class ReportBean implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
     private String username;
     private Date data;
     private float percentuale;

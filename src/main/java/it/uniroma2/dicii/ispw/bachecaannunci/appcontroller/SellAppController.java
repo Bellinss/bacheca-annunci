@@ -2,8 +2,7 @@ package it.uniroma2.dicii.ispw.bachecaannunci.appcontroller;
 
 import it.uniroma2.dicii.ispw.bachecaannunci.controller.Session;
 import it.uniroma2.dicii.ispw.bachecaannunci.exception.DAOException;
-import it.uniroma2.dicii.ispw.bachecaannunci.model.DAO.AdDAO;
-import it.uniroma2.dicii.ispw.bachecaannunci.model.DAO.CategoryDAO;
+import it.uniroma2.dicii.ispw.bachecaannunci.model.DAO.DAOFactory;
 import it.uniroma2.dicii.ispw.bachecaannunci.model.domain.AnnuncioBean;
 import it.uniroma2.dicii.ispw.bachecaannunci.model.domain.Credentials;
 
@@ -13,7 +12,7 @@ public class SellAppController {
 
     // Recupera la lista delle categorie dal DB
     public List<String> getCategories() throws DAOException {
-        return CategoryDAO.getInstance().findAllNames();
+        return DAOFactory.getCategoryDAO().findAllNames();
     }
 
     // Pubblica l'annuncio associandolo all'utente in sessione
@@ -26,11 +25,10 @@ public class SellAppController {
         }
 
         // 2. Chiama il DAO passando i dati
-        AdDAO.getInstance().createAd(
+        DAOFactory.getAdDAO().insert(
                 bean.getTitolo(),
                 bean.getImporto(),
                 bean.getDescrizione(),
-                user.getUsername(), // L'utente viene preso dalla sessione, non dalla GUI
                 bean.getCategoria()
         );
     }

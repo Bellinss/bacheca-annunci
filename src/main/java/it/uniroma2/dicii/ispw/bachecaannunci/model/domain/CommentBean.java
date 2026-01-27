@@ -1,6 +1,11 @@
 package it.uniroma2.dicii.ispw.bachecaannunci.model.domain;
 
-public class CommentBean {
+import java.io.Serializable;
+
+public class CommentBean implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
     private int id;
     private String testo;
     private int idAnnuncio;
