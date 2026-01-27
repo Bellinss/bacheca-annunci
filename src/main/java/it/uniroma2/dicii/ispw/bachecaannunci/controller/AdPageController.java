@@ -2,9 +2,12 @@ package it.uniroma2.dicii.ispw.bachecaannunci.controller;
 
 import it.uniroma2.dicii.ispw.bachecaannunci.appcontroller.AdPageAppController;
 import it.uniroma2.dicii.ispw.bachecaannunci.appcontroller.CommentAppController;
+import it.uniroma2.dicii.ispw.bachecaannunci.appcontroller.NoteAppController;
 import it.uniroma2.dicii.ispw.bachecaannunci.exception.DAOException;
 import it.uniroma2.dicii.ispw.bachecaannunci.model.domain.AnnuncioBean;
 import it.uniroma2.dicii.ispw.bachecaannunci.model.domain.CommentBean;
+import it.uniroma2.dicii.ispw.bachecaannunci.model.domain.NoteBean;
+import javafx.scene.layout.VBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import java.util.List;
@@ -30,6 +33,9 @@ public class AdPageController {
     @FXML private Label categoryLabel;
     @FXML private ListView<CommentBean> commentsListView;
     @FXML private TextField commentInput;
+    @FXML private VBox notesContainer; // Contenitore principale delle note (da nascondere se non proprietario)
+    @FXML private ListView<NoteBean> notesListView;
+    @FXML private TextField noteInput;
 
     // Bottoni
     @FXML private Button backButton;
@@ -42,6 +48,7 @@ public class AdPageController {
     // Riferimento al Controller Applicativo
     private final AdPageAppController appController = new AdPageAppController();
     private final CommentAppController commentAppController = new CommentAppController();
+    private final NoteAppController noteAppController = new NoteAppController();
 
     @FXML
     public void initialize() {
@@ -72,6 +79,21 @@ public class AdPageController {
         } else {
             // Utente loggato: controlliamo se è il proprietario
             boolean isOwner = appController.isOwner(annuncio.getVenditore());
+
+            if (isOwner) {
+                // Mostra la sezione note
+                if (notesContainer != null) {
+                    notesContainer.setVisible(true);
+                    notesContainer.setManaged(true);
+                    loadNotes();
+                }
+            } else {
+                // Nascondi la sezione note agli altri utenti
+                if (notesContainer != null) {
+                    notesContainer.setVisible(false);
+                    notesContainer.setManaged(false);
+                }
+            }
 
             if (isOwner) {
                 // È il venditore: Può segnare come venduto, NON può contattarsi o seguirsi
@@ -129,6 +151,29 @@ public class AdPageController {
 
         } catch (DAOException e) {
             new Alert(Alert.AlertType.WARNING, e.getMessage()).showAndWait();
+        }
+    }
+
+    private void loadNotes() {
+        try {
+            List<NoteBean> notes = noteAppController.getNotes(currentAnnuncio.getId());
+            notesListView.getItems().clear();
+            notesListView.getItems().addAll(notes);
+        } catch (DAOException e) {
+            showAlert(Alert.AlertType.ERROR, "Errore note: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    private void handleAddNote() {
+        String text = noteInput.getText();
+        try {
+            noteAppController.addNote(text, currentAnnuncio.getId());
+            noteInput.clear();
+            loadNotes();
+            new Alert(Alert.AlertType.INFORMATION, "Nota salvata!").showAndWait();
+        } catch (DAOException e) {
+            showAlert(Alert.AlertType.ERROR, e.getMessage());
         }
     }
 

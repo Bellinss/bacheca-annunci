@@ -24,7 +24,7 @@
                 <Insets bottom="15.0" left="20.0" right="20.0" top="15.0" />
             </padding>
             <children>
-                <Button fx:id="backButton" mnemonicParsing="false" style="-fx-background-color: transparent; -fx-border-color: #bdc3c7; -fx-border-radius: 5;" text="← Back to Home" textFill="#7f8c8d">
+                <Button fx:id="backButton" mnemonicParsing="false" style="-fx-background-color: transparent; -fx-border-color: #2c3e50; -fx-border-radius: 5;" text="← Back to Home" textFill="#2c3e50">
                     <font>
                         <Font name="System Bold" size="12.0" />
                     </font>
@@ -33,7 +33,7 @@
                     </cursor>
                 </Button>
                 <Region HBox.hgrow="ALWAYS" />
-                <Label text="Dettaglio Annuncio" textFill="#95a5a6">
+                <Label text="Dettaglio Annuncio" textFill="#2c3e50">
                     <font>
                         <Font size="14.0" />
                     </font>
@@ -140,5 +140,14 @@
             </HBox>
         </VBox>
     </bottom>
+    <right>
+        <VBox fx:id="notesContainer" spacing="10" prefWidth="200" style="-fx-background-color: #fff3cd; -fx-padding: 10; -fx-border-color: #ffeeba;">
+            <Label text="Le tue Note Private" style="-fx-font-weight: bold; -fx-text-fill: #856404;" />
 
+            <ListView fx:id="notesListView" VBox.vgrow="ALWAYS" />
+
+            <TextField fx:id="noteInput" promptText="Scrivi nota..." />
+            <Button text="Aggiungi Nota" onAction="#handleAddNote" maxWidth="Infinity" style="-fx-background-color: #ffc107;" />
+        </VBox>
+    </right>
 </BorderPane>
