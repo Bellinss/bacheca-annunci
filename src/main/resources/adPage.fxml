@@ -14,6 +14,8 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TextField?>
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="600.0" minWidth="800.0" style="-fx-background-color: #f4f4f4;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.uniroma2.dicii.ispw.bachecaannunci.controller.AdPageController">
 
     <top>
@@ -126,4 +128,17 @@
             </children>
         </HBox>
     </center>
+    <bottom>
+        <VBox spacing="10" style="-fx-background-color: #f9f9f9; -fx-padding: 20;">
+            <Label text="Commenti" style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
+
+            <ListView fx:id="commentsListView" prefHeight="150.0" />
+
+            <HBox spacing="10">
+                <TextField fx:id="commentInput" promptText="Scrivi un commento..." HBox.hgrow="ALWAYS"/>
+                <Button text="Invia" onAction="#handlePostComment" style="-fx-background-color: #3498db; -fx-text-fill: white;"/>
+            </HBox>
+        </VBox>
+    </bottom>
+
 </BorderPane>

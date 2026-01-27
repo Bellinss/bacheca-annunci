@@ -1,8 +1,13 @@
 package it.uniroma2.dicii.ispw.bachecaannunci.controller;
 
 import it.uniroma2.dicii.ispw.bachecaannunci.appcontroller.AdPageAppController;
+import it.uniroma2.dicii.ispw.bachecaannunci.appcontroller.CommentAppController;
 import it.uniroma2.dicii.ispw.bachecaannunci.exception.DAOException;
 import it.uniroma2.dicii.ispw.bachecaannunci.model.domain.AnnuncioBean;
+import it.uniroma2.dicii.ispw.bachecaannunci.model.domain.CommentBean;
+import javafx.scene.control.ListView;
+import javafx.scene.control.TextField;
+import java.util.List;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -23,6 +28,8 @@ public class AdPageController {
     @FXML private Label priceLabel;
     @FXML private TextArea descriptionArea;
     @FXML private Label categoryLabel;
+    @FXML private ListView<CommentBean> commentsListView;
+    @FXML private TextField commentInput;
 
     // Bottoni
     @FXML private Button backButton;
@@ -34,6 +41,7 @@ public class AdPageController {
 
     // Riferimento al Controller Applicativo
     private final AdPageAppController appController = new AdPageAppController();
+    private final CommentAppController commentAppController = new CommentAppController();
 
     @FXML
     public void initialize() {
@@ -80,6 +88,17 @@ public class AdPageController {
                 checkIfFollowing();
             }
         }
+        loadComments();
+    }
+
+    private void loadComments() {
+        try {
+            List<CommentBean> comments = commentAppController.getComments(currentAnnuncio.getId());
+            commentsListView.getItems().clear();
+            commentsListView.getItems().addAll(comments);
+        } catch (DAOException e) {
+            showAlert(Alert.AlertType.ERROR, "Errore caricamento commenti: " + e.getMessage());
+        }
     }
 
     @FXML
@@ -93,6 +112,23 @@ public class AdPageController {
             }
         } catch (DAOException e) {
             showAlert(Alert.AlertType.ERROR, "Errore: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    private void handlePostComment() {
+        String text = commentInput.getText();
+
+        try {
+            // Delega all'Applicativo
+            commentAppController.postComment(text, currentAnnuncio.getId());
+
+            // Pulisci e ricarica
+            commentInput.clear();
+            loadComments();
+
+        } catch (DAOException e) {
+            new Alert(Alert.AlertType.WARNING, e.getMessage()).showAndWait();
         }
     }
 
