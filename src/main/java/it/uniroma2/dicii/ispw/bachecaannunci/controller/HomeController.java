@@ -3,15 +3,13 @@ package it.uniroma2.dicii.ispw.bachecaannunci.controller;
 import it.uniroma2.dicii.ispw.bachecaannunci.appcontroller.HomeAppController;
 import it.uniroma2.dicii.ispw.bachecaannunci.exception.DAOException;
 import it.uniroma2.dicii.ispw.bachecaannunci.model.domain.AnnuncioBean;
+import it.uniroma2.dicii.ispw.bachecaannunci.model.domain.NotificationBean;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
+import javafx.scene.control.*;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -20,6 +18,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Optional;
 
 public class HomeController implements Initializable {
 
@@ -72,6 +71,53 @@ public class HomeController implements Initializable {
             } else {
                 showError("Errore nel filtraggio: " + e.getMessage());
             }
+        }
+    }
+
+    @FXML
+    private void handleShowNotifications() {
+        if (!appController.isUserLogged()) {
+            showError("Devi effettuare il login per vedere le notifiche.");
+            return;
+        }
+
+        try {
+            // 1. Recupera notifiche dall'AppController
+            List<NotificationBean> notifications = appController.getNotifications();
+
+            if (notifications.isEmpty()) {
+                showInfo("Non hai nuove notifiche.");
+                return;
+            }
+
+            // 2. Costruisci il messaggio da mostrare
+            StringBuilder content = new StringBuilder();
+            for (NotificationBean n : notifications) {
+                content.append("• ").append(n.toString()).append("\n\n");
+            }
+
+            // 3. Mostra un Alert con opzione "Cancella Tutto"
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Le tue Notifiche");
+            alert.setHeaderText("Aggiornamenti Annunci Seguiti");
+            alert.setContentText(content.toString());
+
+            // Aggiungiamo un bottone custom per pulire le notifiche
+            ButtonType clearBtn = new ButtonType("Segna come lette (Cancella)");
+            ButtonType closeBtn = new ButtonType("Chiudi", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+            alert.getButtonTypes().setAll(clearBtn, closeBtn);
+
+            Optional<ButtonType> result = alert.showAndWait();
+
+            // 4. Se l'utente preme "Cancella", chiamiamo l'AppController
+            if (result.isPresent() && result.get() == clearBtn) {
+                appController.clearAllNotifications();
+                showInfo("Notifiche cancellate.");
+            }
+
+        } catch (DAOException e) {
+            showError("Errore caricamento notifiche: " + e.getMessage());
         }
     }
 

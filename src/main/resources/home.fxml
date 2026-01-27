@@ -40,6 +40,8 @@
 
             <Region prefWidth="20.0" />
 
+            <Button text="🔔 Notifiche" onAction="#handleShowNotifications"
+                    style="-fx-background-color: #f39c12; -fx-text-fill: white; -fx-font-weight: bold;"/>
             <Button fx:id="sellButton" onAction="#goToSell" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-background-radius: 5; -fx-font-weight: bold;" text="+ Vendi" />
             <Button onAction="#goToInbox" text="Messaggi" style="-fx-background-color: transparent; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" />
             <Button mnemonicParsing="false" onAction="#handleLogout" style="-fx-background-color: transparent;" text="Logout" textFill="#7f8c8d" />

@@ -36,6 +36,7 @@ public class AdPageController {
     @FXML private VBox notesContainer; // Contenitore principale delle note (da nascondere se non proprietario)
     @FXML private ListView<NoteBean> notesListView;
     @FXML private TextField noteInput;
+    @FXML private VBox noteInputBox;
 
     // Bottoni
     @FXML private Button backButton;
@@ -77,21 +78,19 @@ public class AdPageController {
             setButtonVisible(followButton, false);
             setButtonVisible(contactButton, false);
         } else {
+            loadNotes();
             // Utente loggato: controlliamo se è il proprietario
             boolean isOwner = appController.isOwner(annuncio.getVenditore());
 
-            if (isOwner) {
-                // Mostra la sezione note
-                if (notesContainer != null) {
-                    notesContainer.setVisible(true);
-                    notesContainer.setManaged(true);
-                    loadNotes();
-                }
-            } else {
-                // Nascondi la sezione note agli altri utenti
-                if (notesContainer != null) {
-                    notesContainer.setVisible(false);
-                    notesContainer.setManaged(false);
+            if (noteInputBox != null) {
+                if (isOwner) {
+                    // Il proprietario vede i campi per scrivere
+                    noteInputBox.setVisible(true);
+                    noteInputBox.setManaged(true);
+                } else {
+                    // Gli altri vedono la lista ma non possono scrivere
+                    noteInputBox.setVisible(false);
+                    noteInputBox.setManaged(false); // Toglie lo spazio vuoto
                 }
             }
 

@@ -141,13 +141,15 @@
         </VBox>
     </bottom>
     <right>
-        <VBox fx:id="notesContainer" spacing="10" prefWidth="200" style="-fx-background-color: #fff3cd; -fx-padding: 10; -fx-border-color: #ffeeba;">
-            <Label text="Le tue Note Private" style="-fx-font-weight: bold; -fx-text-fill: #856404;" />
+        <VBox fx:id="notesContainer" spacing="10" style="-fx-padding: 10; -fx-background-color: #fff3cd; -fx-border-color: #ffeeba;">
+            <Label text="Note sull'annuncio" style="-fx-font-weight: bold; -fx-text-fill: #856404;" />
 
-            <ListView fx:id="notesListView" VBox.vgrow="ALWAYS" />
+            <ListView fx:id="notesListView" prefHeight="150.0" />
 
-            <TextField fx:id="noteInput" promptText="Scrivi nota..." />
-            <Button text="Aggiungi Nota" onAction="#handleAddNote" maxWidth="Infinity" style="-fx-background-color: #ffc107;" />
+            <VBox fx:id="noteInputBox" spacing="5">
+                <TextField fx:id="noteInput" promptText="Scrivi una nota..." />
+                <Button text="Aggiungi Nota" onAction="#handleAddNote" maxWidth="Infinity" style="-fx-background-color: #ffc107;" />
+            </VBox>
         </VBox>
     </right>
 </BorderPane>

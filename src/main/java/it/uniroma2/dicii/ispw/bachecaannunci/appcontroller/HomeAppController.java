@@ -6,6 +6,9 @@ import it.uniroma2.dicii.ispw.bachecaannunci.model.DAO.AdDAO;
 import it.uniroma2.dicii.ispw.bachecaannunci.model.DAO.CategoryDAO;
 import it.uniroma2.dicii.ispw.bachecaannunci.model.domain.AnnuncioBean;
 import it.uniroma2.dicii.ispw.bachecaannunci.model.domain.Credentials;
+import it.uniroma2.dicii.ispw.bachecaannunci.model.DAO.NotificationDAO;
+import it.uniroma2.dicii.ispw.bachecaannunci.model.domain.NotificationBean;
+import java.util.Collections;
 
 import java.util.List;
 
@@ -27,9 +30,6 @@ public class HomeAppController {
         Session.getInstance().setLoggedUser(null);
     }
 
-    /**
-     * Gestisce la logica complessa di filtraggio combinando Categoria, Ricerca e Preferiti.
-     */
     public List<AnnuncioBean> filterAds(String category, String text, boolean onlyFollowed) throws DAOException {
         Credentials user = Session.getInstance().getLoggedUser();
 
@@ -59,6 +59,21 @@ public class HomeAppController {
         } else {
             // Nessun filtro
             return AdDAO.getInstance().findAll();
+        }
+    }
+
+    public List<NotificationBean> getNotifications() throws DAOException {
+        Credentials user = Session.getInstance().getLoggedUser();
+        // Se l'utente non è loggato, non ha notifiche
+        if (user == null) return Collections.emptyList();
+
+        return NotificationDAO.getInstance().retrieveNotifications(user.getUsername());
+    }
+
+    public void clearAllNotifications() throws DAOException {
+        Credentials user = Session.getInstance().getLoggedUser();
+        if (user != null) {
+            NotificationDAO.getInstance().clearNotifications(user.getUsername());
         }
     }
 }
