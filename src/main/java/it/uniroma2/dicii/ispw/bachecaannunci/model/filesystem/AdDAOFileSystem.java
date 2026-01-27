@@ -68,15 +68,21 @@ public class AdDAOFileSystem implements AdDAO {
 
     @Override
     public List<String> getFollowers(int adId) throws DAOException {
-        // Logica Demo: Carica la lista dei preferiti (es. da follows.ser)
-        // E filtra quelli che hanno adId uguale a quello passato.
-        // Esempio fittizio:
         List<String> followers = new ArrayList<>();
 
-        // ... codice per caricare i preferiti ...
-        // for (FollowBean f : allFollows) {
-        //      if (f.getAdId() == adId) followers.add(f.getUsername());
-        // }
+        // 1. Carica la mappa di tutti i follow (Utente -> Set di ID annunci)
+        Map<String, Set<Integer>> allFollows = loadFollows();
+
+        // 2. Itera su ogni utente per vedere se segue l'annuncio specificato
+        for (Map.Entry<String, Set<Integer>> entry : allFollows.entrySet()) {
+            String username = entry.getKey();
+            Set<Integer> followedAds = entry.getValue();
+
+            // Se l'insieme degli annunci seguiti da questo utente contiene l'ID cercato
+            if (followedAds.contains(adId)) {
+                followers.add(username);
+            }
+        }
 
         return followers;
     }

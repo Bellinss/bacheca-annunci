@@ -5,6 +5,8 @@ import it.uniroma2.dicii.ispw.bachecaannunci.exception.DAOException;
 import it.uniroma2.dicii.ispw.bachecaannunci.model.DAO.DAOFactory;
 import it.uniroma2.dicii.ispw.bachecaannunci.model.domain.Credentials;
 
+import java.util.List;
+
 public class AdPageAppController {
 
     // Verifica se c'è un utente loggato
@@ -28,6 +30,14 @@ public class AdPageAppController {
         // 2. INVIA NOTIFICA MANUALE (Perché nella Demo non ci sono i trigger)
         String testoNotifica = "Complimenti! Hai venduto l'oggetto con ID " + adId;
         DAOFactory.getNotificationDAO().addNotification(user.getUsername(), testoNotifica);
+
+        // Notifica i follower che l'annuncio è stato venduto
+        List<String> followers = DAOFactory.getAdDAO().getFollowers(adId);
+        for (String follower : followers) {
+            if (!follower.equals(user.getUsername())) {
+                DAOFactory.getNotificationDAO().addNotification(follower, "L'oggetto #" + adId + " che segui è stato venduto!");
+            }
+        }
     }
 
     // Aggiunge l'annuncio ai preferiti
