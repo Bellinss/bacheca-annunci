@@ -5,6 +5,9 @@ module it.uniroma2.dicii.ispw.bachecaannunci {
     requires java.sql;
     requires mysql.connector.j;
 
+    // Esporta il package principale (dove c'è Main.java) verso javafx.graphics
+    exports it.uniroma2.dicii.ispw.bachecaannunci to javafx.graphics;
+
     // permettere al launcher (javafx.graphics) di istanziare la classe Application tramite reflection
     exports it.uniroma2.dicii.ispw.bachecaannunci.view to javafx.graphics;
 
@@ -12,6 +15,4 @@ module it.uniroma2.dicii.ispw.bachecaannunci {
     opens it.uniroma2.dicii.ispw.bachecaannunci.view to javafx.fxml;
     opens it.uniroma2.dicii.ispw.bachecaannunci.controller to javafx.fxml;
     opens it.uniroma2.dicii.ispw.bachecaannunci to javafx.fxml;
-
-    // se servono altre package per reflection/FXML, aggiungere ulteriori opens/exports analoghi
 }
