@@ -69,7 +69,7 @@ public class UserDAOMySQL implements UserDAO {
     // --------------------------------------------------------
     @Override
     public boolean register(UserBean userBean) throws DAOException {
-        String sql = "{call register_user(?, ?, ?, ?, ?, ?, ?, ?, ?)}";
+        String sql = "{call registra_utente(?, ?, ?, ?, ?, ?, ?, ?, ?)}";
 
         try {
             Connection conn = ConnectionFactory.getConnection();
