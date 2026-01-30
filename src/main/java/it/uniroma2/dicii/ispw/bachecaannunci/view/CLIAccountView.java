@@ -8,7 +8,6 @@ import it.uniroma2.dicii.ispw.bachecaannunci.model.domain.Credentials;
 import it.uniroma2.dicii.ispw.bachecaannunci.model.domain.UserBean;
 
 import java.sql.Date;
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeParseException;
@@ -22,8 +21,9 @@ public class CLIAccountView {
 
     // Regex per validazione
     private static final String EMAIL_REGEX = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$";
-    private static final String PHONE_REGEX = "^\\d{3}-\\d{3}-\\d{4}$"; // Formato: 333-123-4567
+    private static final String PHONE_REGEX = "^\\d{3}-\\d{3}-\\d{4}$";
     private static final String ADDRESS_REGEX = "^(?i)(via|piazza)\\s+[A-Za-z\\s']+\\s+\\d+$";
+    private static final String NAME_REGEX = "^[a-zA-Z\\s']+$";
 
     public CLIAccountView(Scanner scanner) {
         this.scanner = scanner;
@@ -64,6 +64,8 @@ public class CLIAccountView {
             if (cred != null) {
                 Session.getInstance().setLoggedUser(cred);
                 System.out.println("Login effettuato con successo!");
+            } else {
+                System.out.println("Credenziali errate, riprova.");
             }
         } catch (DAOException e) {
             System.out.println("ERRORE LOGIN: " + e.getMessage());
@@ -73,22 +75,16 @@ public class CLIAccountView {
     private void performRegistration() {
         System.out.println("\n--- REGISTRAZIONE ---");
 
-        // Input base (Obbligatori per logica DB, qui uso helper per non lasciarli vuoti)
         String user = getMandatoryString("Username");
         String pass = getMandatoryString("Password");
-        String nome = getMandatoryString("Nome");
-        String cognome = getMandatoryString("Cognome");
 
-        // 1. VALIDAZIONE DATA
+        String nome = getValidName("Nome");
+        String cognome = getValidName("Cognome");
+
         Date dataNascita = getValidDate();
-
-        // 2. RESIDENZA (OBBLIGATORIA + FORMATO VALIDATO)
         String residenza = getValidAddress("Indirizzo di Residenza", true);
-
-        // 3. FATTURAZIONE (OPZIONALE + FORMATO VALIDATO SE INSERITO)
         String fatturazione = getValidAddress("Indirizzo di Fatturazione", false);
 
-        // 4. SCELTA E VALIDAZIONE RECAPITO
         String tipoRecapito;
         String recapito;
 
@@ -112,7 +108,6 @@ public class CLIAccountView {
             }
         }
 
-        // Creazione Bean
         UserBean newUser = new UserBean(user, pass, nome, cognome, dataNascita,
                 residenza, fatturazione, tipoRecapito, recapito);
 
@@ -128,10 +123,34 @@ public class CLIAccountView {
     }
 
     // =================================================================================
-    // METODI HELPER PER LA VALIDAZIONE
+    // METODI HELPER
     // =================================================================================
 
-    // Helper per stringhe obbligatorie (non accetta vuoto)
+    private String capitalize(String str) {
+        if (str == null || str.isBlank()) {
+            return str;
+        }
+        return str.substring(0, 1).toUpperCase() + str.substring(1);
+    }
+
+    private String getValidName(String fieldName) {
+        while (true) {
+            System.out.print(fieldName + ": ");
+            String input = scanner.nextLine().trim();
+
+            if (input.isEmpty()) {
+                System.out.println("ERRORE: Il campo '" + fieldName + "' è obbligatorio.");
+                continue;
+            }
+
+            if (Pattern.matches(NAME_REGEX, input)) {
+                return capitalize(input);
+            } else {
+                System.out.println("ERRORE: " + fieldName + " non valido (inserire solo lettere).");
+            }
+        }
+    }
+
     private String getMandatoryString(String fieldName) {
         while (true) {
             System.out.print(fieldName + ": ");
@@ -147,25 +166,21 @@ public class CLIAccountView {
         while (true) {
             System.out.print("Data Nascita (yyyy-mm-dd): ");
             String input = scanner.nextLine();
-
             try {
                 LocalDate birthDate = LocalDate.parse(input);
                 LocalDate today = LocalDate.now();
-
                 if (birthDate.isAfter(today)) {
                     System.out.println("ERRORE: La data di nascita non può essere nel futuro.");
                     continue;
                 }
-
                 int age = Period.between(birthDate, today).getYears();
                 if (age < 18) {
-                    System.out.println("ERRORE: Devi essere maggiorenne per registrarti (Età attuale: " + age + ").");
+                    System.out.println("ERRORE: Devi essere maggiorenne (Età: " + age + ").");
                     continue;
                 }
                 return Date.valueOf(birthDate);
-
             } catch (DateTimeParseException e) {
-                System.out.println("ERRORE: Formato data non valido. Usa il formato yyyy-mm-dd (es. 1990-12-31).");
+                System.out.println("ERRORE: Formato data non valido. Usa yyyy-mm-dd.");
             }
         }
     }
@@ -176,43 +191,35 @@ public class CLIAccountView {
             System.out.print(fieldName + suffix + ": ");
             String input = scanner.nextLine().trim();
 
-            // Se opzionale e vuoto -> OK
-            if (!isMandatory && input.isEmpty()) {
-                return "Non specificata";
-            }
-
-            // Se obbligatorio e vuoto -> Errore
+            if (!isMandatory && input.isEmpty()) return "Non specificata";
             if (isMandatory && input.isEmpty()) {
                 System.out.println("ERRORE: Il campo '" + fieldName + "' è obbligatorio.");
                 continue;
             }
 
-            // Validazione Formato
             if (Pattern.matches(ADDRESS_REGEX, input)) {
-                return input;
+                return capitalize(input);
             } else {
-                System.out.println("ERRORE: Formato non valido.");
-                System.out.println("Deve iniziare con 'Via' o 'Piazza', seguito dal nome e dal civico finale.");
-                System.out.println("Esempi: 'Via Roma 10', 'Piazza di Spagna 50'.");
+                System.out.println("ERRORE: Formato non valido. (Es. 'Via Roma 10')");
             }
         }
     }
 
     private String getValidEmail() {
         while (true) {
-            System.out.print("Inserisci Email (es. example@gmail.com): ");
+            System.out.print("Inserisci Email: ");
             String input = scanner.nextLine();
             if (Pattern.matches(EMAIL_REGEX, input)) return input;
-            System.out.println("ERRORE: Formato email non valido. Riprova.");
+            System.out.println("ERRORE: Formato email non valido.");
         }
     }
 
     private String getValidPhone() {
         while (true) {
-            System.out.print("Inserisci Cellulare (formato 333-123-4567): ");
+            System.out.print("Inserisci Cellulare (333-123-4567): ");
             String input = scanner.nextLine();
             if (Pattern.matches(PHONE_REGEX, input)) return input;
-            System.out.println("ERRORE: Formato cellulare non valido. Deve essere xxx-xxx-xxxx.");
+            System.out.println("ERRORE: Formato cellulare non valido.");
         }
     }
 }

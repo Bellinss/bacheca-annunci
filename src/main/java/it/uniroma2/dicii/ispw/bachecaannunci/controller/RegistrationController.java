@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.regex.Pattern;
 
 public class RegistrationController {
 
@@ -33,20 +34,19 @@ public class RegistrationController {
     @FXML private Button registerButton;
     @FXML private Button backButton;
 
-    // Riferimento al Controller Applicativo
     private final RegistrationAppController appController = new RegistrationAppController();
+
+    // Regex: Solo lettere, spazi e apostrofi (es. D'Angelo, De Rossi)
+    private static final String NAME_REGEX = "^[a-zA-Z\\s']+$";
 
     @FXML
     public void initialize() {
-        // Setup Grafico: ToggleGroup per i RadioButton
         tipoRecapitoGroup = new ToggleGroup();
         if (rbEmail != null && rbCellulare != null) {
             rbEmail.setToggleGroup(tipoRecapitoGroup);
             rbCellulare.setToggleGroup(tipoRecapitoGroup);
-            rbEmail.setSelected(true); // Default
+            rbEmail.setSelected(true);
         }
-
-        // 2. Setup Bottone "Torna al Login"
         if (backButton != null) {
             backButton.setOnAction(e -> goToLogin());
         }
@@ -54,37 +54,38 @@ public class RegistrationController {
 
     @FXML
     private void handleRegister() {
-        // 1. Recupero dati dalla GUI
+        // 1. Recupero dati
         String user = usernameField.getText();
         String pass = passwordField.getText();
-        String nome = nomeField.getText();
-        String cognome = cognomeField.getText();
+        String nome = capitalize(nomeField.getText());
+        String cognome = capitalize(cognomeField.getText());
         String dataStr = dataNascitaField.getText();
-        String residenza = residenzaField.getText();
-        String fatturazione = fatturazioneField.getText(); // Opzionale
+        String residenza = capitalize(residenzaField.getText());
+        String fatturazione = capitalize(fatturazioneField.getText());
         String recapito = recapitoField.getText();
-
-        // Determina tipo recapito
         String tipo = (rbEmail != null && rbEmail.isSelected()) ? "email" : "cellulare";
 
-        // 2. Validazione Sintattica (Campi obbligatori)
+        // 2. Controllo Campi Vuoti
         if (user.isBlank() || pass.isBlank() || nome.isBlank() || cognome.isBlank() ||
                 dataStr.isBlank() || residenza.isBlank() || recapito.isBlank()) {
             showAlert(Alert.AlertType.WARNING, "Compila tutti i campi obbligatori!");
             return;
         }
 
-        try {
-            // 3. Conversione Data (Logica di presentazione)
-            LocalDate data = LocalDate.parse(dataStr, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        if (!Pattern.matches(NAME_REGEX, nome)) {
+            showAlert(Alert.AlertType.ERROR, "Il Nome contiene caratteri non validi (solo lettere).");
+            return;
+        }
+        if (!Pattern.matches(NAME_REGEX, cognome)) {
+            showAlert(Alert.AlertType.ERROR, "Il Cognome contiene caratteri non validi (solo lettere).");
+            return;
+        }
 
-            // 4. Creazione Bean per il passaggio dati
+        try {
+            LocalDate data = LocalDate.parse(dataStr, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
             UserBean bean = new UserBean(user, pass, nome, cognome, java.sql.Date.valueOf(data), residenza, fatturazione, tipo, recapito);
 
-            // 5. Chiamata al Controller Applicativo
-            boolean success = appController.registerUser(bean);
-
-            if (success) {
+            if (appController.registerUser(bean)) {
                 showAlert(Alert.AlertType.INFORMATION, "Registrazione avvenuta con successo!");
                 goToLogin();
             }
@@ -94,6 +95,11 @@ public class RegistrationController {
         } catch (DAOException e) {
             showAlert(Alert.AlertType.ERROR, "Errore durante la registrazione: " + e.getMessage());
         }
+    }
+
+    private String capitalize(String str) {
+        if (str == null || str.isBlank()) return str;
+        return str.substring(0, 1).toUpperCase() + str.substring(1);
     }
 
     @FXML
