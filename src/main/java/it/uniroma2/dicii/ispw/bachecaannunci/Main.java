@@ -14,9 +14,6 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        // Il metodo start viene chiamato solo se l'utente ha scelto la GUI nel main.
-        // La configurazione (Config.IS_DEMO_VERSION) è già stata impostata nel main.
-
         FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("/login.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
         stage.setTitle("Bacheca Elettronica di Annunci");
@@ -33,18 +30,26 @@ public class Main extends Application {
 
         // --- STEP 1: Scelta Persistenza ---
         System.out.println("\n[1] Seleziona la modalità di salvataggio dati:");
-        System.out.println("   1) File System (Demo)");
-        System.out.println("   2) MySQL (Database)");
+        System.out.println("   1) Demo (In-Memory - Volatile)");
+        System.out.println("   2) File System (Persistente su file)");
+        System.out.println("   3) MySQL (Database)");
         System.out.print("   Scelta: ");
 
-        String persistenceInput = scanner.nextLine();
+        String persistenceInput = scanner.nextLine().trim();
 
-        if (persistenceInput.trim().equals("2")) {
-            Config.IS_DEMO_VERSION = false;
-            System.out.println("   >> Modalità impostata: MySQL");
-        } else {
-            Config.IS_DEMO_VERSION = true;
-            System.out.println("   >> Modalità impostata: File System");
+        switch (persistenceInput) {
+            case "3":
+                Config.mode = Config.PersistenceMode.MYSQL;
+                System.out.println("   >> Modalità impostata: MySQL");
+                break;
+            case "2":
+                Config.mode = Config.PersistenceMode.FILE_SYSTEM;
+                System.out.println("   >> Modalità impostata: File System");
+                break;
+            default:
+                Config.mode = Config.PersistenceMode.IN_MEMORY;
+                System.out.println("   >> Modalità impostata: Demo (In-Memory)");
+                break;
         }
 
         // --- STEP 2: Scelta Interfaccia ---
@@ -56,12 +61,9 @@ public class Main extends Application {
         String viewInput = scanner.nextLine();
 
         if (viewInput.trim().equals("2")) {
-            // Avvio modalità CLI
             System.out.println("\n   >> Avvio CLI in corso...\n");
-            // Non chiudiamo lo scanner qui perché la CLI potrebbe usarlo (System.in)
             new CLIView().run();
         } else {
-            // Avvio modalità GUI
             System.out.println("\n   >> Avvio GUI in corso...");
             launch();
         }

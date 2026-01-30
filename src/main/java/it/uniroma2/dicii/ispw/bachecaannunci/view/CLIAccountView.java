@@ -23,7 +23,7 @@ public class CLIAccountView {
     // Regex per validazione
     private static final String EMAIL_REGEX = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$";
     private static final String PHONE_REGEX = "^\\d{3}-\\d{3}-\\d{4}$"; // Formato: 333-123-4567
-    private static final String ADDRESS_REGEX = "^(Via|Piazza)\\s+[A-Za-z\\s']+\\s+\\d+$";
+    private static final String ADDRESS_REGEX = "^(?i)(via|piazza)\\s+[A-Za-z\\s']+\\s+\\d+$";
 
     public CLIAccountView(Scanner scanner) {
         this.scanner = scanner;
@@ -65,7 +65,7 @@ public class CLIAccountView {
                 Session.getInstance().setLoggedUser(cred);
                 System.out.println("Login effettuato con successo!");
             }
-        } catch (DAOException | SQLException e) {
+        } catch (DAOException e) {
             System.out.println("ERRORE LOGIN: " + e.getMessage());
         }
     }

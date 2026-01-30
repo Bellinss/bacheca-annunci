@@ -62,7 +62,7 @@ public class LoginController {
 
             loadScene(targetFxml);
 
-        } catch (DAOException | SQLException e) {
+        } catch (DAOException e) {
             showAlert(Alert.AlertType.ERROR, "Errore login: " + e.getMessage());
             e.printStackTrace();
         } catch (IOException e) {

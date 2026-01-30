@@ -56,6 +56,12 @@ public class UserDAOMySQL implements UserDAO {
                     return null;
                 }
 
+                try {
+                    ConnectionFactory.changeRole(role);
+                } catch (SQLException e) {
+                    throw new DAOException("Errore cambio ruolo DB: " + e.getMessage());
+                }
+
                 // 5. Ritorna le credenziali
                 return new Credentials(username, password, role);
             }

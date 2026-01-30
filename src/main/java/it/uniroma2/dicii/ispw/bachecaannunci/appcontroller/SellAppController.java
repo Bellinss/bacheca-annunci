@@ -25,10 +25,11 @@ public class SellAppController {
         }
 
         // 2. Chiama il DAO passando i dati
-        DAOFactory.getAdDAO().insert(
+        DAOFactory.getAdDAO().createAd(
                 bean.getTitolo(),
                 bean.getImporto(),
                 bean.getDescrizione(),
+                user.getUsername(),
                 bean.getCategoria()
         );
     }

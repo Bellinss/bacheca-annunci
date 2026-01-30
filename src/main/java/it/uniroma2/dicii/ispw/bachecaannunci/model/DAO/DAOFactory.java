@@ -1,25 +1,21 @@
 package it.uniroma2.dicii.ispw.bachecaannunci.model.DAO;
 
 // Import delle Interfacce
-import it.uniroma2.dicii.ispw.bachecaannunci.model.DAO.AdDAO;
-import it.uniroma2.dicii.ispw.bachecaannunci.model.DAO.CategoryDAO;
-import it.uniroma2.dicii.ispw.bachecaannunci.model.DAO.CommentDAO;
-import it.uniroma2.dicii.ispw.bachecaannunci.model.DAO.MessageDAO;
-import it.uniroma2.dicii.ispw.bachecaannunci.model.DAO.NoteDAO;
-import it.uniroma2.dicii.ispw.bachecaannunci.model.DAO.NotificationDAO;
-import it.uniroma2.dicii.ispw.bachecaannunci.model.DAO.ReportDAO;
-import it.uniroma2.dicii.ispw.bachecaannunci.model.DAO.UserDAO;
+import it.uniroma2.dicii.ispw.bachecaannunci.model.DAO.*;
 
-// Import delle implementazioni File System (Demo)
+// Import delle implementazioni File System
 import it.uniroma2.dicii.ispw.bachecaannunci.model.filesystem.*;
 
-// Import delle implementazioni MySQL (Full)
+// Import delle implementazioni MySQL
 import it.uniroma2.dicii.ispw.bachecaannunci.model.MySQL.*;
+
+// Import della Configurazione
+import it.uniroma2.dicii.ispw.bachecaannunci.model.inmemory.*;
 import it.uniroma2.dicii.ispw.bachecaannunci.utils.Config;
 
 public class DAOFactory {
 
-    // Campi statici per mantenere le istanze (Singleton Pattern)
+    // Campi statici per mantenere le istanze (Singleton Pattern per la Factory)
     private static AdDAO adDaoInstance = null;
     private static CategoryDAO categoryDaoInstance = null;
     private static CommentDAO commentDaoInstance = null;
@@ -31,99 +27,163 @@ public class DAOFactory {
 
     private DAOFactory() {}
 
-    // --- AD DAO (Annunci) ---
+    // ------------------------------------------------------------------------
+    // USER DAO (Login & Registrazione)
+    // ------------------------------------------------------------------------
+    public static UserDAO getUserDAO() {
+        if (userDaoInstance == null) {
+            switch (Config.mode) {
+                case MYSQL:
+                    userDaoInstance = UserDAOMySQL.getInstance();
+                    break;
+                case FILE_SYSTEM:
+                    userDaoInstance = new UserDAOFileSystem();
+                    break;
+                case IN_MEMORY:
+                    userDaoInstance = new UserDAOInMemory();
+                    break;
+            }
+        }
+        return userDaoInstance;
+    }
+
+    // ------------------------------------------------------------------------
+    // AD DAO (Annunci)
+    // ------------------------------------------------------------------------
     public static AdDAO getAdDAO() {
         if (adDaoInstance == null) {
-            if (Config.IS_DEMO_VERSION) {
-                adDaoInstance = new AdDAOFileSystem();
-            } else {
-                adDaoInstance = AdDAOMySQL.getInstance();
+            switch (Config.mode) {
+                case MYSQL:
+                    adDaoInstance = AdDAOMySQL.getInstance();
+                    break;
+                case FILE_SYSTEM:
+                    adDaoInstance = new AdDAOFileSystem();
+                    break;
+                case IN_MEMORY:
+                    adDaoInstance = new AdDAOInMemory();
+                    break;
             }
         }
         return adDaoInstance;
     }
 
-    // --- CATEGORY DAO (Categorie) ---
+    // ------------------------------------------------------------------------
+    // CATEGORY DAO
+    // ------------------------------------------------------------------------
     public static CategoryDAO getCategoryDAO() {
         if (categoryDaoInstance == null) {
-            if (Config.IS_DEMO_VERSION) {
-                categoryDaoInstance = new CategoryDAOFileSystem();
-            } else {
-                categoryDaoInstance = CategoryDAOMySQL.getInstance();
+            switch (Config.mode) {
+                case MYSQL:
+                    categoryDaoInstance = CategoryDAOMySQL.getInstance();
+                    break;
+                case FILE_SYSTEM:
+                    categoryDaoInstance = new CategoryDAOFileSystem();
+                    break;
+                case IN_MEMORY:
+                    categoryDaoInstance = new CategoryDAOInMemory();
+                    break;
             }
         }
         return categoryDaoInstance;
     }
 
-    // --- COMMENT DAO (Commenti) ---
+    // ------------------------------------------------------------------------
+    // COMMENT DAO
+    // ------------------------------------------------------------------------
     public static CommentDAO getCommentDAO() {
         if (commentDaoInstance == null) {
-            if (Config.IS_DEMO_VERSION) {
-                commentDaoInstance = new CommentDAOFileSystem();
-            } else {
-                commentDaoInstance = CommentDAOMySQL.getInstance();
+            switch (Config.mode) {
+                case MYSQL:
+                    commentDaoInstance = CommentDAOMySQL.getInstance();
+                    break;
+                case FILE_SYSTEM:
+                    commentDaoInstance = new CommentDAOFileSystem();
+                    break;
+                case IN_MEMORY:
+                    commentDaoInstance = new CommentDAOInMemory();
+                    break;
             }
         }
         return commentDaoInstance;
     }
 
-    // --- MESSAGE DAO (Messaggi) ---
+    // ------------------------------------------------------------------------
+    // MESSAGE DAO
+    // ------------------------------------------------------------------------
     public static MessageDAO getMessageDAO() {
         if (messageDaoInstance == null) {
-            if (Config.IS_DEMO_VERSION) {
-                messageDaoInstance = new MessageDAOFileSystem();
-            } else {
-                messageDaoInstance = MessageDAOMySQL.getInstance();
+            switch (Config.mode) {
+                case MYSQL:
+                    messageDaoInstance = MessageDAOMySQL.getInstance();
+                    break;
+                case FILE_SYSTEM:
+                    messageDaoInstance = new MessageDAOFileSystem();
+                    break;
+                case IN_MEMORY:
+                    messageDaoInstance = new MessageDAOInMemory();
+                    break;
             }
         }
         return messageDaoInstance;
     }
 
-    // --- NOTE DAO (Note) ---
+    // ------------------------------------------------------------------------
+    // NOTE DAO
+    // ------------------------------------------------------------------------
     public static NoteDAO getNoteDAO() {
         if (noteDaoInstance == null) {
-            if (Config.IS_DEMO_VERSION) {
-                noteDaoInstance = new NoteDAOFileSystem();
-            } else {
-                noteDaoInstance = NoteDAOMySQL.getInstance();
+            switch (Config.mode) {
+                case MYSQL:
+                    noteDaoInstance = NoteDAOMySQL.getInstance();
+                    break;
+                case FILE_SYSTEM:
+                    noteDaoInstance = new NoteDAOFileSystem();
+                    break;
+                case IN_MEMORY:
+                    noteDaoInstance = new NoteDAOInMemory();
+                    break;
             }
         }
         return noteDaoInstance;
     }
 
-    // --- NOTIFICATION DAO (Notifiche) ---
+    // ------------------------------------------------------------------------
+    // NOTIFICATION DAO
+    // ------------------------------------------------------------------------
     public static NotificationDAO getNotificationDAO() {
         if (notificationDaoInstance == null) {
-            if (Config.IS_DEMO_VERSION) {
-                notificationDaoInstance = new NotificationDAOFileSystem();
-            } else {
-                notificationDaoInstance = NotificationDAOMySQL.getInstance();
+            switch (Config.mode) {
+                case MYSQL:
+                    notificationDaoInstance = NotificationDAOMySQL.getInstance();
+                    break;
+                case FILE_SYSTEM:
+                    notificationDaoInstance = new NotificationDAOFileSystem();
+                    break;
+                case IN_MEMORY:
+                    notificationDaoInstance = new NotificationDAOInMemory();
+                    break;
             }
         }
         return notificationDaoInstance;
     }
 
-    // --- REPORT DAO (Report) ---
+    // ------------------------------------------------------------------------
+    // REPORT DAO
+    // ------------------------------------------------------------------------
     public static ReportDAO getReportDAO() {
         if (reportDaoInstance == null) {
-            if (Config.IS_DEMO_VERSION) {
-                reportDaoInstance = new ReportDAOFileSystem();
-            } else {
-                reportDaoInstance = ReportDAOMySQL.getInstance();
+            switch (Config.mode) {
+                case MYSQL:
+                    reportDaoInstance = ReportDAOMySQL.getInstance();
+                    break;
+                case FILE_SYSTEM:
+                    reportDaoInstance = new ReportDAOFileSystem();
+                    break;
+                case IN_MEMORY:
+                    reportDaoInstance = new ReportDAOInMemory();
+                    break;
             }
         }
         return reportDaoInstance;
-    }
-
-    // --- USER DAO (Login & Registrazione) ---
-    public static UserDAO getUserDAO() {
-        if (userDaoInstance == null) {
-            if (Config.IS_DEMO_VERSION) {
-                userDaoInstance = new UserDAOFileSystem();
-            } else {
-                userDaoInstance = UserDAOMySQL.getInstance();
-            }
-        }
-        return userDaoInstance;
     }
 }

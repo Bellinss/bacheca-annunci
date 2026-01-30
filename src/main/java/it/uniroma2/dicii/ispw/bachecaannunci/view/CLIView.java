@@ -25,9 +25,9 @@ public class CLIView {
     }
 
     public void run() {
-        System.out.println("=========================================");
-        System.out.println("   BACHECA ANNUNCI - CLI MODE (" + (Config.IS_DEMO_VERSION ? "DEMO" : "FULL") + ")");
-        System.out.println("=========================================");
+        System.out.println("==========================================");
+        System.out.println("   BACHECA ELETTRONICA DI ANNUNCI - CLI   " + "(" + Config.mode + ")");
+        System.out.println("==========================================");
 
         boolean running = true;
         while (running) {
