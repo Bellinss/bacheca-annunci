@@ -10,10 +10,10 @@ import java.util.List;
 
 public class CategoryDAOFileSystem implements CategoryDAO {
 
-    private static final String FILE_NAME = Config.DEMO_FILE_PATH + "categories.ser";
+    private static final String FILE_NAME = Config.FILE_PATH + "categories.ser";
 
     public CategoryDAOFileSystem() {
-        File folder = new File(Config.DEMO_FILE_PATH);
+        File folder = new File(Config.FILE_PATH);
         if (!folder.exists()) {
             folder.mkdirs();
         }

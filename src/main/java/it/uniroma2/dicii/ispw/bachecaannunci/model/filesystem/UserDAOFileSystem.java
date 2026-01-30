@@ -14,11 +14,11 @@ import java.util.List;
 public class UserDAOFileSystem implements UserDAO {
 
     // File dove vengono salvati gli utenti registrati
-    private static final String FILE_NAME = Config.DEMO_FILE_PATH + "users.ser";
+    private static final String FILE_NAME = Config.FILE_PATH + "users.ser";
 
     public UserDAOFileSystem() {
         // Assicura che la cartella demo_data esista
-        new File(Config.DEMO_FILE_PATH).mkdirs();
+        new File(Config.FILE_PATH).mkdirs();
     }
 
     // --------------------------------------------------------

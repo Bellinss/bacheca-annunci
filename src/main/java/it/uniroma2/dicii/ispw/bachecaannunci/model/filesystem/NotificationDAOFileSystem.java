@@ -13,10 +13,10 @@ import java.util.stream.Collectors;
 
 public class NotificationDAOFileSystem implements NotificationDAO {
 
-    private static final String FILE_NAME = Config.DEMO_FILE_PATH + "notifications.ser";
+    private static final String FILE_NAME = Config.FILE_PATH + "notifications.ser";
 
     public NotificationDAOFileSystem() {
-        new File(Config.DEMO_FILE_PATH).mkdirs();
+        new File(Config.FILE_PATH).mkdirs();
     }
 
     // --- Helper Load/Save ---

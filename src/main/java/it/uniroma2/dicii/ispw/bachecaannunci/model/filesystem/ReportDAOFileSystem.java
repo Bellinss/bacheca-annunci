@@ -14,7 +14,7 @@ import java.util.List;
 
 public class ReportDAOFileSystem implements ReportDAO {
 
-    private static final String ADS_FILE = Config.DEMO_FILE_PATH + "annunci.ser";
+    private static final String ADS_FILE = Config.FILE_PATH + "annunci.ser";
 
     public ReportDAOFileSystem() {}
 

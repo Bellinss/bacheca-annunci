@@ -18,10 +18,10 @@ import java.util.stream.Collectors;
 
 public class MessageDAOFileSystem implements MessageDAO {
 
-    private static final String FILE_NAME = Config.DEMO_FILE_PATH + "messages.ser";
+    private static final String FILE_NAME = Config.FILE_PATH + "messages.ser";
 
     public MessageDAOFileSystem() {
-        new File(Config.DEMO_FILE_PATH).mkdirs();
+        new File(Config.FILE_PATH).mkdirs();
     }
 
     // --- Helper Load/Save ---

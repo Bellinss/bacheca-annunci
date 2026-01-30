@@ -12,13 +12,13 @@ import java.util.stream.Collectors;
 
 public class AdDAOFileSystem implements AdDAO {
 
-    private static final String ADS_FILE = Config.DEMO_FILE_PATH + "annunci.ser";
-    private static final String FOLLOWS_FILE = Config.DEMO_FILE_PATH + "segue.ser";
+    private static final String ADS_FILE = Config.FILE_PATH + "annunci.ser";
+    private static final String FOLLOWS_FILE = Config.FILE_PATH + "segue.ser";
 
-    private static final String COUNTERS_FILE = Config.DEMO_FILE_PATH + "counters.properties";
+    private static final String COUNTERS_FILE = Config.FILE_PATH + "counters.properties";
 
     public AdDAOFileSystem() {
-        new File(Config.DEMO_FILE_PATH).mkdirs();
+        new File(Config.FILE_PATH).mkdirs();
     }
 
     @SuppressWarnings("unchecked")

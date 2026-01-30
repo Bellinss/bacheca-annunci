@@ -12,10 +12,10 @@ import java.util.stream.Collectors;
 
 public class NoteDAOFileSystem implements NoteDAO {
 
-    private static final String FILE_NAME = Config.DEMO_FILE_PATH + "notes.ser";
+    private static final String FILE_NAME = Config.FILE_PATH + "notes.ser";
 
     public NoteDAOFileSystem() {
-        new File(Config.DEMO_FILE_PATH).mkdirs();
+        new File(Config.FILE_PATH).mkdirs();
     }
 
     // --- Helper Load/Save ---

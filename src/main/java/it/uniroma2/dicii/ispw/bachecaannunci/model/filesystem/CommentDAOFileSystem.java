@@ -12,10 +12,10 @@ import java.util.stream.Collectors;
 
 public class CommentDAOFileSystem implements CommentDAO {
 
-    private static final String FILE_NAME = Config.DEMO_FILE_PATH + "comments.ser";
+    private static final String FILE_NAME = Config.FILE_PATH + "comments.ser";
 
     public CommentDAOFileSystem() {
-        new File(Config.DEMO_FILE_PATH).mkdirs();
+        new File(Config.FILE_PATH).mkdirs();
     }
 
     // --- Helper Load/Save ---
