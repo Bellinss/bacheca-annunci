@@ -1,7 +1,7 @@
 package it.uniroma2.dicii.ispw.bachecaannunci.model.MySQL;
 
 import it.uniroma2.dicii.ispw.bachecaannunci.exception.DAOException;
-import it.uniroma2.dicii.ispw.bachecaannunci.model.DAO.AdDAO; // Importa l'interfaccia
+import it.uniroma2.dicii.ispw.bachecaannunci.model.DAO.AdDAO;
 import it.uniroma2.dicii.ispw.bachecaannunci.model.domain.AnnuncioBean;
 import it.uniroma2.dicii.ispw.bachecaannunci.controller.Session;
 import it.uniroma2.dicii.ispw.bachecaannunci.model.domain.Credentials;
@@ -10,7 +10,6 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-// 1. RINOMINA LA CLASSE E IMPLEMENTA L'INTERFACCIA
 public class AdDAOMySQL implements AdDAO {
 
     private static AdDAOMySQL instance = null;
