@@ -14,7 +14,7 @@ public class ConnectionFactory {
     private ConnectionFactory() {}
 
     static {
-        try (InputStream input = new FileInputStream("config/db.properties")) {
+        try (InputStream input = new FileInputStream("resources/db.properties")) {
             Properties properties = new Properties();
             properties.load(input);
 
@@ -35,7 +35,7 @@ public class ConnectionFactory {
     public static void changeRole(Role role) throws SQLException {
         connection.close();
 
-        try (InputStream input = new FileInputStream("config/db.properties")) {
+        try (InputStream input = new FileInputStream("resources/db.properties")) {
             Properties properties = new Properties();
             properties.load(input);
 
