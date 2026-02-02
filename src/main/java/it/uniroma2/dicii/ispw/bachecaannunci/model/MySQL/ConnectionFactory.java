@@ -14,7 +14,10 @@ public class ConnectionFactory {
     private ConnectionFactory() {}
 
     static {
-        try (InputStream input = new FileInputStream("resources/db.properties")) {
+        try (InputStream input = ConnectionFactory.class.getClassLoader().getResourceAsStream("db.properties")) {
+            if (input == null) {
+                throw new IOException("File db.properties non trovato nel classpath!");
+            }
             Properties properties = new Properties();
             properties.load(input);
 
@@ -35,7 +38,10 @@ public class ConnectionFactory {
     public static void changeRole(Role role) throws SQLException {
         connection.close();
 
-        try (InputStream input = new FileInputStream("resources/db.properties")) {
+        try (InputStream input = ConnectionFactory.class.getClassLoader().getResourceAsStream("db.properties")) {
+            if (input == null) {
+                throw new IOException("File db.properties non trovato nel classpath!");
+            }
             Properties properties = new Properties();
             properties.load(input);
 
