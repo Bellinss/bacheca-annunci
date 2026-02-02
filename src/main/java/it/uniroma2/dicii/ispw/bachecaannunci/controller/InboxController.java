@@ -62,8 +62,6 @@ public class InboxController {
 
             // 3. Inizializza il controller di destinazione
             ChatController controller = loader.getController();
-            // Nota: qui passiamo solo lo username e 0 come ID annuncio generico per chat libera,
-            // oppure adatta initChat se necessario.
             controller.initChat(selectedUser, 0, "Conversazione");
 
             // 4. Cambia scena

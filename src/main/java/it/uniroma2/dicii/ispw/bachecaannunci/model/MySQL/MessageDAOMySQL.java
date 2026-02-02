@@ -20,8 +20,6 @@ public class MessageDAOMySQL implements MessageDAO {
 
     @Override
     public void inviaMessaggio(String sender, String recipient, String text) throws DAOException {
-        // ... (Copia qui tutto il codice del metodo originale inviaMessaggio) ...
-        // Vedi il file che hai caricato
         try {
             Connection conn = ConnectionFactory.getConnection();
             String sql = "{call invia_messaggio(?,?,?,?,?,?,?)}";
@@ -47,8 +45,6 @@ public class MessageDAOMySQL implements MessageDAO {
 
     @Override
     public List<MessageBean> retrieveMessages(String me, String other) throws DAOException {
-        // ... (Copia qui tutto il codice originale di retrieveMessages) ...
-        //
         List<MessageBean> messaggi = new ArrayList<>();
         try {
             Connection conn = ConnectionFactory.getConnection();
@@ -60,15 +56,12 @@ public class MessageDAOMySQL implements MessageDAO {
                 if (hasResults) {
                     try (ResultSet rs = cs.getResultSet()) {
                         while (rs.next()) {
-                            // Nota: Qui prendi i dati dal DB
                             String sender = rs.getString("Utente_Acquirente");
                             String text = rs.getString("Testo");
                             Date data = rs.getDate("Data");
                             Time time = rs.getTime("Ora");
 
                             MessageBean msg = new MessageBean(text, data, time, sender);
-                            // Se il Bean ha il campo recipient, settalo qui (anche se per la visualizzazione lista potrebbe non servire)
-                            // msg.setRecipient(...);
                             messaggi.add(msg);
                         }
                     }
@@ -83,8 +76,6 @@ public class MessageDAOMySQL implements MessageDAO {
 
     @Override
     public List<String> getActiveConversations(String myUsername) throws DAOException {
-        // ... (Copia qui il codice originale di getActiveConversations) ...
-        //
         List<String> interlocutori = new ArrayList<>();
         String sql = "SELECT Utente_Acquirente, Utente_Venditore FROM conversazione " +
                 "WHERE Utente_Acquirente = ? OR Utente_Venditore = ?";
