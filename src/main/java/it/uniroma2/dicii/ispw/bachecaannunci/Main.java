@@ -46,9 +46,13 @@ public class Main extends Application {
                 Config.mode = Config.PersistenceMode.FILE_SYSTEM;
                 System.out.println("   >> Modalità impostata: File System");
                 break;
-            default:
+            case "1":
                 Config.mode = Config.PersistenceMode.IN_MEMORY;
                 System.out.println("   >> Modalità impostata: Demo (In-Memory)");
+                break;
+            default:
+                System.out.println("   >> Input non valido. Impostazione di default: Demo (In-Memory)");
+                Config.mode = Config.PersistenceMode.IN_MEMORY;
                 break;
         }
 
@@ -63,9 +67,12 @@ public class Main extends Application {
         if (viewInput.trim().equals("2")) {
             System.out.println("\n   >> Avvio CLI in corso...\n");
             new CLIView().run();
-        } else {
+        } else if (viewInput.trim().equals("1")) {
             System.out.println("\n   >> Avvio GUI in corso...");
             launch();
+        } else {
+            System.out.println("   >> Input non valido. Uscita dal programma.");
+            System.exit(0);
         }
     }
 }
