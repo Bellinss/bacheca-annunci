@@ -29,8 +29,6 @@
                     <Font name="System Bold" size="14.0" />
                 </font>
             </Label>
-            <Label text="Path Categoria:" />
-            <TextField fx:id="categoryPathField" />
             <Label text="Nome Categoria:" />
             <TextField fx:id="categoryNameField" promptText="Es. Arredamento" />
             <Button onAction="#handleAddCategory" style="-fx-background-color: #27ae60; -fx-text-fill: white;" text="Aggiungi Categoria" />

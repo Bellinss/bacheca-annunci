@@ -23,54 +23,45 @@ public class AdDAOMySQL implements AdDAO {
         return instance;
     }
 
+    // --------------------------------------------------------------------------------
+    // 1. CREATE AD: Creazione di un nuovo annuncio
+    // --------------------------------------------------------------------------------
     @Override
     public void createAd(String titolo, double prezzo, String descrizione, String utente, String categoria) throws DAOException {
-        String sql = "{call crea_annuncio(?,?,?,?,?,?)}";
+        // Imposta lo stato a 'disponibile' di default
+        String sql = "INSERT INTO annunci (titolo, importo, descrizione, venditore, categoria, stato) VALUES (?, ?, ?, ?, ?, 'disponibile')";
 
         try {
             Connection conn = ConnectionFactory.getConnection();
-            try (CallableStatement cs = conn.prepareCall(sql)) {
-                cs.setString(1, titolo);
-                cs.setDouble(2, prezzo);
-                cs.setString(3, descrizione);
-                cs.setString(4, utente);
-                cs.setString(5, categoria);
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, titolo);
+                ps.setDouble(2, prezzo);
+                ps.setString(3, descrizione);
+                ps.setString(4, utente);
+                ps.setString(5, categoria);
 
-                // Parametro di output
-                cs.registerOutParameter(6, Types.INTEGER);
-
-                cs.execute();
+                ps.executeUpdate();
             }
         } catch (SQLException e) {
             throw new DAOException("Errore creazione annuncio: " + e.getMessage());
         }
     }
 
+    // --------------------------------------------------------------------------------
+    // 2. FIND ALL: Restituisce tutti gli annunci (filtrati per 'disponibile')
+    // --------------------------------------------------------------------------------
     @Override
     public List<AnnuncioBean> findAll() throws DAOException {
         List<AnnuncioBean> annunci = new ArrayList<>();
-
-        String query = "{call lista_annunci()}";
+        // Logica di Business: mostriamo solo quelli disponibili
+        String sql = "SELECT * FROM annunci WHERE stato = 'disponibile'";
 
         try {
             Connection conn = ConnectionFactory.getConnection();
-            try (CallableStatement cs = conn.prepareCall(query)) {
-
-                boolean hasResults = cs.execute();
-
-                if (hasResults) {
-                    try (ResultSet rs = cs.getResultSet()) {
-                        while (rs.next()) {
-                            AnnuncioBean bean = new AnnuncioBean(
-                                    rs.getInt("Codice"),
-                                    rs.getString("Titolo"),
-                                    rs.getDouble("Importo"),
-                                    rs.getString("Descrizione"),
-                                    rs.getString("Utente"),
-                                    rs.getString("Categoria")
-                            );
-                            annunci.add(bean);
-                        }
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        annunci.add(mapRowToBean(rs));
                     }
                 }
             }
@@ -80,22 +71,29 @@ public class AdDAOMySQL implements AdDAO {
         return annunci;
     }
 
+    // --------------------------------------------------------------------------------
+    // 3. SEGUI ANNUNCIO: Inserimento nella tabella 'segue'
+    // --------------------------------------------------------------------------------
     @Override
     public boolean seguiAnnuncio(String username, int idAnnuncio) throws DAOException {
+        // Necessaria la tabella 'segue' nel DB (Utente_Username, Annuncio_Codice)
+        String sql = "INSERT INTO segue (Utente_Username, Annuncio_Codice) VALUES (?, ?)";
+
         try {
             Connection conn = ConnectionFactory.getConnection();
-            Credentials loggedUser = Session.getInstance().getLoggedUser();
-            if (loggedUser == null) throw new DAOException("Utente non loggato.");
-
-            try (CallableStatement cs = conn.prepareCall("{call segui_annuncio(?,?)}")) {
-                cs.setString(1, username);
-                cs.setInt(2, idAnnuncio);
-
-                cs.execute();
-                return true;
+            // Verifica sessione (logica mantenuta dal vecchio DAO)
+            if (Session.getInstance().getLoggedUser() == null) {
+                throw new DAOException("Utente non loggato.");
             }
 
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, username);
+                ps.setInt(2, idAnnuncio);
+                ps.executeUpdate();
+                return true;
+            }
         } catch (SQLException e) {
+            // Gestione duplicati (già seguito)
             if (e.getErrorCode() == 1062 || e.getSQLState().startsWith("23")) {
                 return false;
             }
@@ -103,60 +101,60 @@ public class AdDAOMySQL implements AdDAO {
         }
     }
 
+    // --------------------------------------------------------------------------------
+    // 4. INSERT: Variante di creazione che usa la Sessione e ritorna boolean
+    // --------------------------------------------------------------------------------
     @Override
     public boolean insert(String titolo, double importo, String descrizione, String categoria) throws DAOException {
+        String sql = "INSERT INTO annunci (titolo, importo, descrizione, venditore, categoria, stato) VALUES (?, ?, ?, ?, ?, 'disponibile')";
+
         try {
             Connection conn = ConnectionFactory.getConnection();
             if (conn == null) throw new DAOException("Connessione assente");
 
-            String username = Session.getInstance().getLoggedUser().getUsername();
+            Credentials user = Session.getInstance().getLoggedUser();
+            if (user == null) throw new DAOException("Nessun utente loggato nella sessione!");
 
-            try (CallableStatement cs = conn.prepareCall("{call crea_annuncio(?,?,?,?,?,?)}")) {
+            try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+                ps.setString(1, titolo);
+                ps.setDouble(2, importo);
+                ps.setString(3, descrizione);
+                ps.setString(4, user.getUsername());
+                ps.setString(5, categoria);
 
-                cs.setString(1, titolo);
-                cs.setFloat(2, (float) importo);
-                cs.setString(3, descrizione);
-                cs.setString(4, username);
-                cs.setString(5, categoria);
-
-                cs.registerOutParameter(6, Types.INTEGER);
-
-                cs.execute();
-
-                int nuovoId = cs.getInt(6);
-                return nuovoId > 0;
+                int rows = ps.executeUpdate();
+                // Verifica se è stato generato un ID (successo)
+                if (rows > 0) {
+                    try (ResultSet rs = ps.getGeneratedKeys()) {
+                        return rs.next(); // Ritorna true se c'è un ID generato
+                    }
+                }
+                return false;
             }
         } catch (SQLException e) {
             throw new DAOException("Errore pubblicazione annuncio: " + e.getMessage());
-        } catch (NullPointerException e) {
-            throw new DAOException("Nessun utente loggato nella sessione!");
         }
     }
 
+    // --------------------------------------------------------------------------------
+    // 5. FIND BY STRING: Ricerca per titolo o descrizione
+    // --------------------------------------------------------------------------------
     @Override
     public List<AnnuncioBean> findByString(String queryText) throws DAOException {
         List<AnnuncioBean> risultati = new ArrayList<>();
-        String sql = "{call cerca_annunci(?)}";
+        // Cerca testo nel titolo o descrizione, solo annunci disponibili
+        String sql = "SELECT * FROM annunci WHERE (titolo LIKE ? OR descrizione LIKE ?) AND stato = 'disponibile'";
 
         try {
             Connection conn = ConnectionFactory.getConnection();
-            try (CallableStatement cs = conn.prepareCall(sql)) {
-                cs.setString(1, queryText);
-                boolean hasResults = cs.execute();
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                String pattern = "%" + queryText + "%";
+                ps.setString(1, pattern);
+                ps.setString(2, pattern);
 
-                if (hasResults) {
-                    try (ResultSet rs = cs.getResultSet()) {
-                        while (rs.next()) {
-                            AnnuncioBean bean = new AnnuncioBean(
-                                    rs.getInt("Codice"),
-                                    rs.getString("Titolo"),
-                                    rs.getDouble("Importo"),
-                                    rs.getString("Descrizione"),
-                                    rs.getString("Utente"),
-                                    rs.getString("Categoria")
-                            );
-                            risultati.add(bean);
-                        }
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        risultati.add(mapRowToBean(rs));
                     }
                 }
             }
@@ -166,17 +164,19 @@ public class AdDAOMySQL implements AdDAO {
         return risultati;
     }
 
+    // --------------------------------------------------------------------------------
+    // 6. IS FOLLOWING: Controlla se l'utente segue l'annuncio
+    // --------------------------------------------------------------------------------
     @Override
     public boolean isFollowing(String username, int idAnnuncio) throws DAOException {
-        String query = "SELECT * FROM segue WHERE Utente_Username = ? AND Annuncio_Codice = ?";
+        String sql = "SELECT 1 FROM segue WHERE Utente_Username = ? AND Annuncio_Codice = ?";
 
         try {
             Connection conn = ConnectionFactory.getConnection();
-            try (PreparedStatement stmt = conn.prepareStatement(query)) {
-                stmt.setString(1, username);
-                stmt.setInt(2, idAnnuncio);
-
-                try (ResultSet rs = stmt.executeQuery()) {
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, username);
+                ps.setInt(2, idAnnuncio);
+                try (ResultSet rs = ps.executeQuery()) {
                     return rs.next();
                 }
             }
@@ -185,48 +185,59 @@ public class AdDAOMySQL implements AdDAO {
         }
     }
 
+    // --------------------------------------------------------------------------------
+    // 7. MARK AS SOLD: Segna come venduto
+    // --------------------------------------------------------------------------------
     @Override
     public void markAsSold(int idAnnuncio, String venditore) throws DAOException {
-        String sql = "{call oggetto_venduto(?,?)}";
+        // 1. Verifica Proprietario (Logica di Business in Java)
+        String checkSql = "SELECT venditore FROM annunci WHERE codice = ?";
+        String updateSql = "UPDATE annunci SET stato = 'venduto' WHERE codice = ?";
 
         try {
             Connection conn = ConnectionFactory.getConnection();
-            try (CallableStatement cs = conn.prepareCall(sql)) {
-                cs.setInt(1, idAnnuncio);
-                cs.setString(2, venditore);
-                cs.execute();
+
+            // Check ownership
+            try (PreparedStatement psCheck = conn.prepareStatement(checkSql)) {
+                psCheck.setInt(1, idAnnuncio);
+                try (ResultSet rs = psCheck.executeQuery()) {
+                    if (rs.next()) {
+                        String realVendor = rs.getString("venditore");
+                        if (!realVendor.equals(venditore)) {
+                            throw new DAOException("Non sei il proprietario di questo annuncio.");
+                        }
+                    } else {
+                        throw new DAOException("Annuncio non trovato.");
+                    }
+                }
             }
+
+            // Execute Update
+            try (PreparedStatement psUpdate = conn.prepareStatement(updateSql)) {
+                psUpdate.setInt(1, idAnnuncio);
+                psUpdate.executeUpdate();
+            }
+
         } catch (SQLException e) {
-            if ("45011".equals(e.getSQLState())) {
-                throw new DAOException("Non sei il proprietario di questo annuncio.");
-            }
             throw new DAOException("Errore nel segnare come venduto: " + e.getMessage());
         }
     }
 
+    // --------------------------------------------------------------------------------
+    // 8. FIND BY CATEGORY: Filtra per categoria
+    // --------------------------------------------------------------------------------
     @Override
     public List<AnnuncioBean> findByCategory(String categoria) throws DAOException {
         List<AnnuncioBean> risultati = new ArrayList<>();
-        String sql = "{call filtra_annunci_categoria(?)}";
+        String sql = "SELECT * FROM annunci WHERE categoria = ? AND stato = 'disponibile'";
 
         try {
             Connection conn = ConnectionFactory.getConnection();
-            try (CallableStatement cs = conn.prepareCall(sql)) {
-                cs.setString(1, categoria);
-                boolean hasResults = cs.execute();
-                if (hasResults) {
-                    try (ResultSet rs = cs.getResultSet()) {
-                        while (rs.next()) {
-                            AnnuncioBean bean = new AnnuncioBean(
-                                    rs.getInt("Codice"),
-                                    rs.getString("Titolo"),
-                                    rs.getDouble("Importo"),
-                                    rs.getString("Descrizione"),
-                                    rs.getString("Utente"),
-                                    rs.getString("Categoria")
-                            );
-                            risultati.add(bean);
-                        }
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, categoria);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        risultati.add(mapRowToBean(rs));
                     }
                 }
             }
@@ -236,29 +247,24 @@ public class AdDAOMySQL implements AdDAO {
         return risultati;
     }
 
+    // --------------------------------------------------------------------------------
+    // 9. FIND FOLLOWED ADS: Annunci seguiti dall'utente
+    // --------------------------------------------------------------------------------
     @Override
     public List<AnnuncioBean> findFollowedAds(String username) throws DAOException {
         List<AnnuncioBean> annunci = new ArrayList<>();
-        String sql = "{call lista_annunci_seguiti(?)}";
+        // Join tra annunci e segue
+        String sql = "SELECT a.* FROM annunci a " +
+                "JOIN segue s ON a.codice = s.Annuncio_Codice " +
+                "WHERE s.Utente_Username = ? AND a.stato = 'disponibile'";
 
         try {
             Connection conn = ConnectionFactory.getConnection();
-            try (CallableStatement cs = conn.prepareCall(sql)) {
-                cs.setString(1, username);
-                boolean hasResults = cs.execute();
-                if (hasResults) {
-                    try (ResultSet rs = cs.getResultSet()) {
-                        while (rs.next()) {
-                            AnnuncioBean bean = new AnnuncioBean(
-                                    rs.getInt("Codice"),
-                                    rs.getString("Titolo"),
-                                    rs.getDouble("Importo"),
-                                    rs.getString("Descrizione"),
-                                    rs.getString("Utente"),
-                                    rs.getString("Categoria")
-                            );
-                            annunci.add(bean);
-                        }
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, username);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        annunci.add(mapRowToBean(rs));
                     }
                 }
             }
@@ -268,30 +274,24 @@ public class AdDAOMySQL implements AdDAO {
         return annunci;
     }
 
+    // --------------------------------------------------------------------------------
+    // 10. FIND FOLLOWED BY CATEGORY: Seguiti + Filtro Categoria
+    // --------------------------------------------------------------------------------
     @Override
     public List<AnnuncioBean> findFollowedByCategory(String username, String categoria) throws DAOException {
         List<AnnuncioBean> risultati = new ArrayList<>();
-        String sql = "{call filtra_seguiti_e_categoria(?,?)}";
+        String sql = "SELECT a.* FROM annunci a " +
+                "JOIN segue s ON a.codice = s.Annuncio_Codice " +
+                "WHERE s.Utente_Username = ? AND a.categoria = ? AND a.stato = 'disponibile'";
 
         try {
             Connection conn = ConnectionFactory.getConnection();
-            try (CallableStatement cs = conn.prepareCall(sql)) {
-                cs.setString(1, username);
-                cs.setString(2, categoria);
-                boolean hasResults = cs.execute();
-                if (hasResults) {
-                    try (ResultSet rs = cs.getResultSet()) {
-                        while (rs.next()) {
-                            AnnuncioBean bean = new AnnuncioBean(
-                                    rs.getInt("Codice"),
-                                    rs.getString("Titolo"),
-                                    rs.getDouble("Importo"),
-                                    rs.getString("Descrizione"),
-                                    rs.getString("Utente"),
-                                    rs.getString("Categoria")
-                            );
-                            risultati.add(bean);
-                        }
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, username);
+                ps.setString(2, categoria);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        risultati.add(mapRowToBean(rs));
                     }
                 }
             }
@@ -301,6 +301,9 @@ public class AdDAOMySQL implements AdDAO {
         return risultati;
     }
 
+    // --------------------------------------------------------------------------------
+    // 11. GET FOLLOWERS: Restituisce lista utenti che seguono un annuncio
+    // --------------------------------------------------------------------------------
     @Override
     public List<String> getFollowers(int adId) throws DAOException {
         List<String> followers = new ArrayList<>();
@@ -310,7 +313,6 @@ public class AdDAOMySQL implements AdDAO {
             Connection conn = ConnectionFactory.getConnection();
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setInt(1, adId);
-
                 try (ResultSet rs = ps.executeQuery()) {
                     while (rs.next()) {
                         followers.add(rs.getString("Utente_Username"));
@@ -321,5 +323,17 @@ public class AdDAOMySQL implements AdDAO {
             throw new DAOException("Errore recupero followers: " + e.getMessage());
         }
         return followers;
+    }
+
+    // --- Metodo Helper privato per mappare il ResultSet al Bean ---
+    private AnnuncioBean mapRowToBean(ResultSet rs) throws SQLException {
+        return new AnnuncioBean(
+                rs.getInt("codice"),
+                rs.getString("titolo"),
+                rs.getDouble("importo"),
+                rs.getString("descrizione"),
+                rs.getString("venditore"),
+                rs.getString("categoria")
+        );
     }
 }

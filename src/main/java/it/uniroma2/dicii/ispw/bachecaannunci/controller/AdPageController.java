@@ -33,10 +33,11 @@ public class AdPageController {
     @FXML private Label categoryLabel;
     @FXML private ListView<CommentBean> commentsListView;
     @FXML private TextField commentInput;
-    @FXML private VBox notesContainer; // Contenitore principale delle note (da nascondere se non proprietario)
+
+    // Contenitore principale delle note (contiene lista e input)
+    @FXML private VBox notesContainer;
     @FXML private ListView<NoteBean> notesListView;
     @FXML private TextField noteInput;
-    @FXML private VBox noteInputBox;
 
     // Bottoni
     @FXML private Button backButton;
@@ -46,7 +47,6 @@ public class AdPageController {
 
     private AnnuncioBean currentAnnuncio;
 
-    // Riferimento al Controller Applicativo
     private final AdPageAppController appController = new AdPageAppController();
     private final CommentAppController commentAppController = new CommentAppController();
     private final NoteAppController noteAppController = new NoteAppController();
@@ -69,47 +69,46 @@ public class AdPageController {
             categoryLabel.setText(annuncio.getCategoria().toUpperCase());
         }
 
-        // 2. Gestione Visibilità Bottoni tramite AppController
         boolean loggedIn = appController.isLoggedIn();
 
         if (!loggedIn) {
-            // Utente non loggato: vede solo info, niente azioni
+            // Se non loggato, nascondi tutto ciò che è interattivo
             setButtonVisible(soldButton, false);
             setButtonVisible(followButton, false);
             setButtonVisible(contactButton, false);
+            setNotesVisible(false); // Nascondi note
         } else {
-            loadNotes();
-            // Utente loggato: controlliamo se è il proprietario
+            // Controlla se è il proprietario
             boolean isOwner = appController.isOwner(annuncio.getVenditore());
 
-            if (noteInputBox != null) {
-                if (isOwner) {
-                    // Il proprietario vede i campi per scrivere
-                    noteInputBox.setVisible(true);
-                    noteInputBox.setManaged(true);
-                } else {
-                    // Gli altri vedono la lista ma non possono scrivere
-                    noteInputBox.setVisible(false);
-                    noteInputBox.setManaged(false); // Toglie lo spazio vuoto
-                }
+            if (isOwner) {
+                setNotesVisible(true);
+                loadNotes();
+            } else {
+                setNotesVisible(false);
             }
 
+            // --- LOGICA BOTTONI ---
             if (isOwner) {
-                // È il venditore: Può segnare come venduto, NON può contattarsi o seguirsi
                 setButtonVisible(soldButton, true);
                 setButtonVisible(followButton, false);
                 setButtonVisible(contactButton, false);
             } else {
-                // È un acquirente: Può seguire e contattare, NON può segnare venduto
                 setButtonVisible(soldButton, false);
                 setButtonVisible(followButton, true);
                 setButtonVisible(contactButton, true);
-
-                // Controlla se lo segue già
                 checkIfFollowing();
             }
         }
         loadComments();
+    }
+
+    // Metodo helper per nascondere l'intero blocco note
+    private void setNotesVisible(boolean visible) {
+        if (notesContainer != null) {
+            notesContainer.setVisible(visible);
+            notesContainer.setManaged(visible); // Rimuove lo spazio occupato se nascosto
+        }
     }
 
     private void loadComments() {
@@ -139,15 +138,10 @@ public class AdPageController {
     @FXML
     private void handlePostComment() {
         String text = commentInput.getText();
-
         try {
-            // Delega all'Applicativo
             commentAppController.postComment(text, currentAnnuncio.getId());
-
-            // Pulisci e ricarica
             commentInput.clear();
             loadComments();
-
         } catch (DAOException e) {
             new Alert(Alert.AlertType.WARNING, e.getMessage()).showAndWait();
         }
@@ -186,12 +180,9 @@ public class AdPageController {
         Optional<ButtonType> result = alert.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
             try {
-                // Delega all'applicativo
                 appController.markAsSold(currentAnnuncio.getId());
-
                 new Alert(Alert.AlertType.INFORMATION, "Annuncio venduto con successo!").showAndWait();
                 goBack();
-
             } catch (DAOException e) {
                 showAlert(Alert.AlertType.ERROR, "Errore: " + e.getMessage());
             }
@@ -203,11 +194,8 @@ public class AdPageController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/chat.fxml"));
             Parent root = loader.load();
-
             ChatController chatController = loader.getController();
-            // Passa i dati necessari alla Chat
             chatController.initChat(currentAnnuncio.getVenditore(), currentAnnuncio.getId(), currentAnnuncio.getTitolo());
-
             Stage stage = (Stage) contactButton.getScene().getWindow();
             stage.setScene(new Scene(root));
         } catch (IOException e) {

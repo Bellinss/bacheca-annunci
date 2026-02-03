@@ -27,7 +27,7 @@ public class CLIAdminView {
             case "1":
                 System.out.print("Nome nuova categoria: ");
                 try {
-                    adminController.addCategory("icon_path", scanner.nextLine());
+                    adminController.addCategory(scanner.nextLine());
                     System.out.println("Fatto.");
                 } catch (DAOException e) { System.out.println("Errore: " + e.getMessage()); }
                 break;

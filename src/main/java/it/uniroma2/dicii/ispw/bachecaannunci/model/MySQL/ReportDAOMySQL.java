@@ -11,42 +11,68 @@ public class ReportDAOMySQL implements ReportDAO {
     private ReportDAOMySQL() {}
 
     public static ReportDAOMySQL getInstance() {
-        if (instance == null) instance = new ReportDAOMySQL();
+        if (instance == null) {
+            instance = new ReportDAOMySQL();
+        }
         return instance;
     }
 
     @Override
     public ReportBean generateReport(String targetUsername) throws DAOException {
-        String sql = "{call genera_report(?)}";
-        ReportBean report = null;
+        // Query per contare il totale degli annunci pubblicati dall'utente
+        String sqlTotal = "SELECT COUNT(*) AS totali FROM annunci WHERE venditore = ?";
+        // Query per contare solo gli annunci che sono stati effettivamente venduti
+        String sqlSold = "SELECT COUNT(*) AS venduti FROM annunci WHERE venditore = ? AND stato = 'venduto'";
 
         try {
             Connection conn = ConnectionFactory.getConnection();
-            try (CallableStatement cs = conn.prepareCall(sql)) {
-                cs.setString(1, targetUsername);
 
-                boolean hasResults = cs.execute();
-                if (hasResults) {
-                    try (ResultSet rs = cs.getResultSet()) {
-                        if (rs.next()) {
-                            report = new ReportBean(
-                                    rs.getString("Utente"),
-                                    rs.getDate("Data"),
-                                    rs.getFloat("Percentuale"),
-                                    rs.getInt("Annunci totali"),
-                                    rs.getInt("Annunci venduti")
-                            );
-                        }
+            int annunciTotali = 0;
+            int annunciVenduti = 0;
+
+            // 1. Calcolo Annunci Totali
+            try (PreparedStatement psTotal = conn.prepareStatement(sqlTotal)) {
+                psTotal.setString(1, targetUsername);
+                try (ResultSet rs = psTotal.executeQuery()) {
+                    if (rs.next()) {
+                        annunciTotali = rs.getInt("totali");
                     }
                 }
             }
-        } catch (SQLException e) {
-            String state = e.getSQLState();
-            if ("45003".equals(state)) throw new DAOException("L'utente non è un venditore.");
-            if ("45004".equals(state)) throw new DAOException("Nessun annuncio venduto per questo utente.");
 
-            throw new DAOException("Errore generazione report: " + e.getMessage());
+            if (annunciTotali == 0) {
+                throw new DAOException("L'utente non è un venditore.");
+            }
+
+            // 2. Calcolo Annunci Venduti
+            try (PreparedStatement psSold = conn.prepareStatement(sqlSold)) {
+                psSold.setString(1, targetUsername);
+                try (ResultSet rs = psSold.executeQuery()) {
+                    if (rs.next()) {
+                        annunciVenduti = rs.getInt("venduti");
+                    }
+                }
+            }
+
+            if (annunciVenduti == 0) {
+                throw new DAOException("Nessun annuncio venduto per questo utente.");
+            }
+
+            // 3. Calcolo Percentuale e Data in Java
+            float percentuale = ((float) annunciVenduti / annunciTotali) * 100;
+            java.sql.Date dataOggi = new java.sql.Date(System.currentTimeMillis());
+
+            // 4. Creazione e ritorno del Bean popolato con i dati calcolati
+            return new ReportBean(
+                    targetUsername,
+                    dataOggi,
+                    percentuale,
+                    annunciTotali,
+                    annunciVenduti
+            );
+
+        } catch (SQLException e) {
+            throw new DAOException("Errore generazione report nel DAO: " + e.getMessage());
         }
-        return report;
     }
 }

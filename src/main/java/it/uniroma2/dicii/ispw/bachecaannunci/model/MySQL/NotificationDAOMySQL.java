@@ -9,36 +9,39 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NotificationDAOMySQL implements NotificationDAO {
+
     private static NotificationDAOMySQL instance = null;
 
     private NotificationDAOMySQL() {}
 
     public static NotificationDAOMySQL getInstance() {
-        if (instance == null) instance = new NotificationDAOMySQL();
+        if (instance == null) {
+            instance = new NotificationDAOMySQL();
+        }
         return instance;
     }
 
+    // --------------------------------------------------------------------------------
+    // 1. RETRIEVE NOTIFICATIONS: Select diretta ordinata per data
+    // --------------------------------------------------------------------------------
     @Override
     public List<NotificationBean> retrieveNotifications(String username) throws DAOException {
         List<NotificationBean> list = new ArrayList<>();
-        String sql = "{call lista_notifiche(?)}";
+        String sql = "SELECT * FROM notifiche WHERE username = ? ORDER BY data DESC";
 
         try {
             Connection conn = ConnectionFactory.getConnection();
-            try (CallableStatement cs = conn.prepareCall(sql)) {
-                cs.setString(1, username);
-                boolean hasResults = cs.execute();
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, username);
 
-                if (hasResults) {
-                    try (ResultSet rs = cs.getResultSet()) {
-                        while (rs.next()) {
-                            list.add(new NotificationBean(
-                                    rs.getInt("Codice"),
-                                    rs.getString("Username_Utente"),
-                                    rs.getTimestamp("Data"),
-                                    rs.getString("Testo")
-                            ));
-                        }
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        list.add(new NotificationBean(
+                                rs.getInt("codice"),
+                                rs.getString("username"),
+                                rs.getTimestamp("data"),
+                                rs.getString("testo")
+                        ));
                     }
                 }
             }
@@ -48,24 +51,30 @@ public class NotificationDAOMySQL implements NotificationDAO {
         return list;
     }
 
+    // --------------------------------------------------------------------------------
+    // 2. CLEAR NOTIFICATIONS: Delete diretta per l'utente
+    // --------------------------------------------------------------------------------
     @Override
     public void clearNotifications(String username) throws DAOException {
-        String sql = "{call elimina_notifiche(?)}";
+        String sql = "DELETE FROM notifiche WHERE username = ?";
         try {
             Connection conn = ConnectionFactory.getConnection();
-            try (CallableStatement cs = conn.prepareCall(sql)) {
-                cs.setString(1, username);
-                cs.execute();
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, username);
+                ps.executeUpdate();
             }
         } catch (SQLException e) {
             throw new DAOException("Errore cancellazione notifiche: " + e.getMessage());
         }
     }
 
+    // --------------------------------------------------------------------------------
+    // 3. ADD NOTIFICATION: Insert diretta
+    // --------------------------------------------------------------------------------
     @Override
     public void addNotification(String username, String testo) throws DAOException {
-        // Query diretta per inserire la notifica (senza usare procedure complesse)
-        String sql = "INSERT INTO notifica (Username_Utente, Testo, Data) VALUES (?, ?, NOW())";
+        // Usa NOW() di MySQL o passa un Timestamp da Java
+        String sql = "INSERT INTO notifiche (username, testo, data) VALUES (?, ?, NOW())";
 
         try {
             Connection conn = ConnectionFactory.getConnection();

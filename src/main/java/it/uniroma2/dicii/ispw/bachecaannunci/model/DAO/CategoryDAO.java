@@ -5,5 +5,5 @@ import java.util.List;
 
 public interface CategoryDAO {
     List<String> findAllNames() throws DAOException;
-    void addCategory(String path, String nomeCategoria) throws DAOException;
+    void addCategory(String nomeCategoria) throws DAOException;
 }

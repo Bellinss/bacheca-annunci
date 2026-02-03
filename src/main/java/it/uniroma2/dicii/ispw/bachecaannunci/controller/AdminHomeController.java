@@ -16,7 +16,6 @@ import java.io.IOException;
 
 public class AdminHomeController {
 
-    @FXML private TextField categoryPathField;
     @FXML private TextField categoryNameField;
     @FXML private TextField targetUserField;
     @FXML private TextArea reportOutputArea;
@@ -27,22 +26,20 @@ public class AdminHomeController {
     @FXML
     private void handleAddCategory() {
         // 1. Recupero dati dalla GUI
-        String path = categoryPathField.getText().trim();
         String nome = categoryNameField.getText().trim();
 
         // 2. Validazione sintattica (GUI)
-        if (path.isEmpty() || nome.isEmpty()) {
+        if (nome.isEmpty()) {
             showAlert(Alert.AlertType.WARNING, "Inserisci sia Path che Nome per la categoria.");
             return;
         }
 
         try {
             // 3. Delega all'Applicativo
-            appController.addCategory(path, nome);
+            appController.addCategory(nome);
 
             // 4. Aggiornamento GUI (Successo)
             showAlert(Alert.AlertType.INFORMATION, "Categoria '" + nome + "' aggiunta con successo!");
-            categoryPathField.clear();
             categoryNameField.clear();
 
         } catch (DAOException e) {

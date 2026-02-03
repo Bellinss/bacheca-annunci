@@ -62,7 +62,7 @@ public class CategoryDAOFileSystem implements CategoryDAO {
     }
 
     @Override
-    public void addCategory(String path, String nomeCategoria) throws DAOException {
+    public void addCategory(String nomeCategoria) throws DAOException {
         List<String> categories = load();
 
         // Controllo duplicati (Case Insensitive)

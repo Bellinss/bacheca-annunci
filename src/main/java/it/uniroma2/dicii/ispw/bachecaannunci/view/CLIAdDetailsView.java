@@ -33,24 +33,26 @@ public class CLIAdDetailsView {
 
             boolean isOwner = adPageController.isOwner(ad.getVenditore());
 
-            // CONTROLLO PREVENTIVO: L'utente segue già questo annuncio?
+            // Controlla se segue già l'annuncio
             boolean isFollowing = false;
             try {
                 if (!isOwner) {
                     isFollowing = adPageController.isFollowing(ad.getId());
                 }
             } catch (DAOException e) {
-                // Se c'è errore, assumiamo false per non bloccare la UI
                 isFollowing = false;
             }
 
             System.out.println("AZIONI:");
             System.out.println("1. Visualizza Commenti");
 
+            // --- MENU DINAMICO ---
             if (isOwner) {
+                // Solo il proprietario vede l'opzione note
                 System.out.println("2. Gestione NOTE (Privato)");
                 System.out.println("3. Segna come VENDUTO");
             } else {
+                // Gli altri vedono opzioni di contatto
                 System.out.println("2. Contatta Venditore");
                 System.out.println("3. Aggiungi Commento");
 
@@ -68,6 +70,7 @@ public class CLIAdDetailsView {
                 switch (choice) {
                     case "1": showComments(ad.getId()); break;
                     case "2":
+                        // LOGICA DI SWITCH DINAMICA
                         if (isOwner) handleNotes(ad.getId());
                         else messageView.openChat(ad.getVenditore());
                         break;
@@ -84,7 +87,6 @@ public class CLIAdDetailsView {
                         break;
                     case "4":
                         if (!isOwner) {
-                            // MODIFICA QUI: Azione condizionale
                             if (isFollowing) {
                                 System.out.println("--> Annuncio già presente nei preferiti!");
                             } else {

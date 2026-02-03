@@ -28,7 +28,7 @@ public class CategoryDAOInMemory implements CategoryDAO {
     }
 
     @Override
-    public void addCategory(String path, String nomeCategoria) throws DAOException {
+    public void addCategory(String nomeCategoria) throws DAOException {
         // Nota: Il parametro 'path' è ignorato in questa implementazione InMemory,
         // dato che non gestiamo file o immagini associate alle categorie in questa demo semplice.
 
