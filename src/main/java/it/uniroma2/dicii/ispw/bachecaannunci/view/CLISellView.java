@@ -3,6 +3,7 @@ package it.uniroma2.dicii.ispw.bachecaannunci.view;
 import it.uniroma2.dicii.ispw.bachecaannunci.appcontroller.HomeAppController;
 import it.uniroma2.dicii.ispw.bachecaannunci.appcontroller.SellAppController;
 import it.uniroma2.dicii.ispw.bachecaannunci.controller.Session;
+import it.uniroma2.dicii.ispw.bachecaannunci.exception.ValidationException;
 import it.uniroma2.dicii.ispw.bachecaannunci.model.domain.AnnuncioBean;
 
 import java.util.List;
@@ -41,6 +42,9 @@ public class CLISellView {
 
         } catch (NumberFormatException e) {
             System.out.println("Errore: Prezzo non valido.");
+        } catch (ValidationException e) {
+            System.out.println("\n>>> ATTENZIONE: " + e.getMessage());
+            System.out.println(">>> Riprova l'inserimento con dati corretti.");
         } catch (Exception e) {
             System.out.println("Errore: " + e.getMessage());
         }

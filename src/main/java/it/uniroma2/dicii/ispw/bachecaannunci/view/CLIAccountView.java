@@ -4,6 +4,7 @@ import it.uniroma2.dicii.ispw.bachecaannunci.appcontroller.LoginAppController;
 import it.uniroma2.dicii.ispw.bachecaannunci.appcontroller.RegistrationAppController;
 import it.uniroma2.dicii.ispw.bachecaannunci.controller.Session;
 import it.uniroma2.dicii.ispw.bachecaannunci.exception.DAOException;
+import it.uniroma2.dicii.ispw.bachecaannunci.exception.ValidationException; // IMPORTA
 import it.uniroma2.dicii.ispw.bachecaannunci.model.domain.Credentials;
 import it.uniroma2.dicii.ispw.bachecaannunci.model.domain.UserBean;
 
@@ -15,6 +16,7 @@ import java.util.Scanner;
 import java.util.regex.Pattern;
 
 public class CLIAccountView {
+    // ... (Il resto delle variabili e costruttore rimangono uguali) ...
     private final Scanner scanner;
     private final LoginAppController loginController = new LoginAppController();
     private final RegistrationAppController regController = new RegistrationAppController();
@@ -30,6 +32,7 @@ public class CLIAccountView {
     }
 
     public boolean runGuestMenu() {
+        // ... (Codice menu invariato) ...
         System.out.println("\n--- BENVENUTO ---");
         System.out.println("1. Login");
         System.out.println("2. Registrati");
@@ -38,23 +41,15 @@ public class CLIAccountView {
         String choice = scanner.nextLine();
 
         return switch (choice) {
-            case "1" -> {
-                performLogin();
-                yield false;
-            }
-            case "2" -> {
-                performRegistration();
-                yield false;
-            }
+            case "1" -> { performLogin(); yield false; }
+            case "2" -> { performRegistration(); yield false; }
             case "0" -> true;
-            default -> {
-                System.out.println("Scelta non valida.");
-                yield false;
-            }
+            default -> { System.out.println("Scelta non valida."); yield false; }
         };
     }
 
     private void performLogin() {
+        // ... (Codice login invariato) ...
         System.out.print("Username: ");
         String user = scanner.nextLine();
         System.out.print("Password: ");
@@ -77,24 +72,21 @@ public class CLIAccountView {
 
         String user = getMandatoryString("Username");
         String pass = getMandatoryString("Password");
-
         String nome = getValidName("Nome");
         String cognome = getValidName("Cognome");
-
         Date dataNascita = getValidDate();
         String residenza = getValidAddress("Indirizzo di Residenza", true);
         String fatturazione = getValidAddress("Indirizzo di Fatturazione", false);
 
         String tipoRecapito;
         String recapito;
-
+        // ... (Logica scelta recapito invariata) ...
         while (true) {
             System.out.println("Scegli il tipo di recapito:");
             System.out.println("1. Email");
             System.out.println("2. Cellulare");
             System.out.print("> ");
             String scelta = scanner.nextLine();
-
             if (scelta.equals("1")) {
                 tipoRecapito = "Email";
                 recapito = getValidEmail();
@@ -104,7 +96,7 @@ public class CLIAccountView {
                 recapito = getValidPhone();
                 break;
             } else {
-                System.out.println("Scelta non valida, riprova.");
+                System.out.println("Scelta non valida.");
             }
         }
 
@@ -112,24 +104,26 @@ public class CLIAccountView {
                 residenza, fatturazione, tipoRecapito, recapito);
 
         try {
+            // CHIAMATA CON TRY-CATCH PER VALIDATION EXCEPTION
             if (regController.registerUser(newUser)) {
                 System.out.println("Registrazione completata con successo! Ora puoi effettuare il login.");
             } else {
                 System.out.println("Errore: Username già utilizzato.");
             }
+
+        } catch (ValidationException e) {
+            // GESTIONE 1: Dati non validi (es. password < 4 caratteri)
+            System.out.println("\n>>> DATI NON VALIDI: " + e.getMessage());
+            System.out.println(">>> Riprova la registrazione prestando attenzione ai requisiti.");
+
         } catch (DAOException e) {
-            System.out.println("Errore durante la registrazione: " + e.getMessage());
+            // GESTIONE 2: Errore Tecnico
+            System.out.println("\n>>> ERRORE SISTEMA: " + e.getMessage());
         }
     }
 
-    // =================================================================================
-    // METODI HELPER
-    // =================================================================================
-
     private String capitalize(String str) {
-        if (str == null || str.isBlank()) {
-            return str;
-        }
+        if (str == null || str.isBlank()) return str;
         return str.substring(0, 1).toUpperCase() + str.substring(1);
     }
 
@@ -137,17 +131,12 @@ public class CLIAccountView {
         while (true) {
             System.out.print(fieldName + ": ");
             String input = scanner.nextLine().trim();
-
             if (input.isEmpty()) {
                 System.out.println("ERRORE: Il campo '" + fieldName + "' è obbligatorio.");
                 continue;
             }
-
-            if (Pattern.matches(NAME_REGEX, input)) {
-                return capitalize(input);
-            } else {
-                System.out.println("ERRORE: " + fieldName + " non valido (inserire solo lettere).");
-            }
+            if (Pattern.matches(NAME_REGEX, input)) return capitalize(input);
+            else System.out.println("ERRORE: " + fieldName + " non valido (inserire solo lettere).");
         }
     }
 
@@ -155,9 +144,7 @@ public class CLIAccountView {
         while (true) {
             System.out.print(fieldName + ": ");
             String input = scanner.nextLine().trim();
-            if (!input.isEmpty()) {
-                return input;
-            }
+            if (!input.isEmpty()) return input;
             System.out.println("ERRORE: Il campo '" + fieldName + "' è obbligatorio.");
         }
     }
@@ -169,19 +156,11 @@ public class CLIAccountView {
             try {
                 LocalDate birthDate = LocalDate.parse(input);
                 LocalDate today = LocalDate.now();
-                if (birthDate.isAfter(today)) {
-                    System.out.println("ERRORE: La data di nascita non può essere nel futuro.");
-                    continue;
-                }
+                if (birthDate.isAfter(today)) { System.out.println("ERRORE: La data di nascita non può essere nel futuro."); continue; }
                 int age = Period.between(birthDate, today).getYears();
-                if (age < 18) {
-                    System.out.println("ERRORE: Devi essere maggiorenne (Età: " + age + ").");
-                    continue;
-                }
+                if (age < 18) { System.out.println("ERRORE: Devi essere maggiorenne (Età: " + age + ")."); continue; }
                 return Date.valueOf(birthDate);
-            } catch (DateTimeParseException e) {
-                System.out.println("ERRORE: Formato data non valido. Usa yyyy-mm-dd.");
-            }
+            } catch (DateTimeParseException e) { System.out.println("ERRORE: Formato data non valido. Usa yyyy-mm-dd."); }
         }
     }
 
@@ -190,18 +169,10 @@ public class CLIAccountView {
             String suffix = isMandatory ? "" : " (opzionale, premi invio per saltare)";
             System.out.print(fieldName + suffix + ": ");
             String input = scanner.nextLine().trim();
-
             if (!isMandatory && input.isEmpty()) return "Non specificata";
-            if (isMandatory && input.isEmpty()) {
-                System.out.println("ERRORE: Il campo '" + fieldName + "' è obbligatorio.");
-                continue;
-            }
-
-            if (Pattern.matches(ADDRESS_REGEX, input)) {
-                return capitalize(input);
-            } else {
-                System.out.println("ERRORE: Formato non valido. (Es. 'Via Roma 10')");
-            }
+            if (isMandatory && input.isEmpty()) { System.out.println("ERRORE: Il campo '" + fieldName + "' è obbligatorio."); continue; }
+            if (Pattern.matches(ADDRESS_REGEX, input)) return capitalize(input);
+            else System.out.println("ERRORE: Formato non valido. (Es. 'Via Roma 10')");
         }
     }
 

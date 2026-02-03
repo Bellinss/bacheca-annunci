@@ -2,6 +2,7 @@ package it.uniroma2.dicii.ispw.bachecaannunci.controller;
 
 import it.uniroma2.dicii.ispw.bachecaannunci.appcontroller.SellAppController;
 import it.uniroma2.dicii.ispw.bachecaannunci.exception.DAOException;
+import it.uniroma2.dicii.ispw.bachecaannunci.exception.ValidationException;
 import it.uniroma2.dicii.ispw.bachecaannunci.model.domain.AnnuncioBean;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -80,7 +81,8 @@ public class SellController {
             showAlert(Alert.AlertType.ERROR, "Il prezzo deve essere un numero valido (es. 10.50).");
         } catch (DAOException e) {
             showAlert(Alert.AlertType.ERROR, "Errore pubblicazione: " + e.getMessage());
-        }
+        } catch (ValidationException e) {
+            showAlert(Alert.AlertType.WARNING, "Dati non validi: " + e.getMessage());        }
     }
 
     private void goHome() {

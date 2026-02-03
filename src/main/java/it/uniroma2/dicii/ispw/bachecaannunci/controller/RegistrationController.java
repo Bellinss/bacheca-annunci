@@ -2,6 +2,7 @@ package it.uniroma2.dicii.ispw.bachecaannunci.controller;
 
 import it.uniroma2.dicii.ispw.bachecaannunci.appcontroller.RegistrationAppController;
 import it.uniroma2.dicii.ispw.bachecaannunci.exception.DAOException;
+import it.uniroma2.dicii.ispw.bachecaannunci.exception.ValidationException;
 import it.uniroma2.dicii.ispw.bachecaannunci.model.domain.UserBean;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -35,8 +36,6 @@ public class RegistrationController {
     @FXML private Button backButton;
 
     private final RegistrationAppController appController = new RegistrationAppController();
-
-    // Regex: Solo lettere, spazi e apostrofi (es. D'Angelo, De Rossi)
     private static final String NAME_REGEX = "^[a-zA-Z\\s']+$";
 
     @FXML
@@ -54,7 +53,7 @@ public class RegistrationController {
 
     @FXML
     private void handleRegister() {
-        // 1. Recupero dati
+        // Recupero dati grezzi dalla UI
         String user = usernameField.getText();
         String pass = passwordField.getText();
         String nome = capitalize(nomeField.getText());
@@ -65,19 +64,13 @@ public class RegistrationController {
         String recapito = recapitoField.getText();
         String tipo = (rbEmail != null && rbEmail.isSelected()) ? "email" : "cellulare";
 
-        // 2. Controllo Campi Vuoti
-        if (user.isBlank() || pass.isBlank() || nome.isBlank() || cognome.isBlank() ||
-                dataStr.isBlank() || residenza.isBlank() || recapito.isBlank()) {
-            showAlert(Alert.AlertType.WARNING, "Compila tutti i campi obbligatori!");
-            return;
-        }
-
+        // Regex check basilari per la UI
         if (!Pattern.matches(NAME_REGEX, nome)) {
-            showAlert(Alert.AlertType.ERROR, "Il Nome contiene caratteri non validi (solo lettere).");
+            showAlert(Alert.AlertType.ERROR, "Il Nome contiene caratteri non validi.");
             return;
         }
         if (!Pattern.matches(NAME_REGEX, cognome)) {
-            showAlert(Alert.AlertType.ERROR, "Il Cognome contiene caratteri non validi (solo lettere).");
+            showAlert(Alert.AlertType.ERROR, "Il Cognome contiene caratteri non validi.");
             return;
         }
 
@@ -85,15 +78,23 @@ public class RegistrationController {
             LocalDate data = LocalDate.parse(dataStr, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
             UserBean bean = new UserBean(user, pass, nome, cognome, java.sql.Date.valueOf(data), residenza, fatturazione, tipo, recapito);
 
+            // --- CHIAMATA AL CONTROLLER CON GESTIONE ECCEZIONI ---
             if (appController.registerUser(bean)) {
-                showAlert(Alert.AlertType.INFORMATION, "Registrazione avvenuta con successo!");
+                showAlert(Alert.AlertType.INFORMATION, "Registrazione completata!");
                 goToLogin();
             }
 
-        } catch (DateTimeParseException e) {
-            showAlert(Alert.AlertType.ERROR, "Formato data non valido. Usa dd/MM/yyyy");
+        } catch (ValidationException e) {
+            // GESTIONE 1: Errore di validazione (es. password corta) -> Warning all'utente
+            showAlert(Alert.AlertType.WARNING, "Attenzione: " + e.getMessage());
+
         } catch (DAOException e) {
-            showAlert(Alert.AlertType.ERROR, "Errore durante la registrazione: " + e.getMessage());
+            // GESTIONE 2: Errore tecnico (es. DB offline, user duplicato) -> Error
+            showAlert(Alert.AlertType.ERROR, "Errore sistema: " + e.getMessage());
+
+        } catch (DateTimeParseException e) {
+            // GESTIONE 3: Errore formato data -> Error
+            showAlert(Alert.AlertType.ERROR, "Formato data non valido. Usa dd/MM/yyyy");
         }
     }
 
@@ -112,7 +113,6 @@ public class RegistrationController {
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Impossibile tornare al login.");
         }
     }
 

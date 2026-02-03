@@ -5,6 +5,7 @@ import it.uniroma2.dicii.ispw.bachecaannunci.appcontroller.NoteAppController;
 import it.uniroma2.dicii.ispw.bachecaannunci.appcontroller.SellAppController;
 import it.uniroma2.dicii.ispw.bachecaannunci.controller.Session;
 import it.uniroma2.dicii.ispw.bachecaannunci.exception.DAOException;
+import it.uniroma2.dicii.ispw.bachecaannunci.exception.ValidationException;
 import it.uniroma2.dicii.ispw.bachecaannunci.model.DAO.DAOFactory;
 import it.uniroma2.dicii.ispw.bachecaannunci.model.domain.AnnuncioBean;
 import it.uniroma2.dicii.ispw.bachecaannunci.model.domain.Credentials;
@@ -75,7 +76,7 @@ class BachecaTest {
      * e che questo venga correttamente salvato nel DAO.
      */
     @Test
-    void testPublishAd() throws DAOException {
+    void testPublishAd() throws DAOException, ValidationException {
         // 1. Setup: Simuliamo il login (necessario per pubblicare)
         Credentials user = new Credentials("mario", "rossi", Role.UTENTE);
         Session.getInstance().setLoggedUser(user);
