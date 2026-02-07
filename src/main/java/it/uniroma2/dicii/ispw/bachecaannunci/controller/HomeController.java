@@ -161,7 +161,6 @@ public class HomeController implements Initializable {
                 adsContainer.getChildren().add(cardBox);
             }
         } catch (IOException e) {
-            e.printStackTrace();
             showError("Errore nel caricamento delle card annuncio.");
         }
     }
@@ -174,7 +173,6 @@ public class HomeController implements Initializable {
             stage.setScene(new Scene(root));
             stage.show();
         } catch (IOException e) {
-            e.printStackTrace();
             showError("Impossibile caricare la pagina: " + fxmlFile);
         }
     }

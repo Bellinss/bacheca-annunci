@@ -64,10 +64,8 @@ public class LoginController {
 
         } catch (DAOException e) {
             showAlert(Alert.AlertType.ERROR, "Errore login: " + e.getMessage());
-            e.printStackTrace();
         } catch (IOException e) {
             showAlert(Alert.AlertType.ERROR, "Errore caricamento pagina: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 
@@ -76,7 +74,6 @@ public class LoginController {
         try {
             loadScene("/register.fxml");
         } catch (IOException e) {
-            e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Impossibile aprire la registrazione.");
         }
     }

@@ -92,7 +92,6 @@ public class SellController {
             Stage stage = (Stage) (backButton != null ? backButton : titoloField).getScene().getWindow();
             stage.setScene(new Scene(root));
         } catch (IOException e) {
-            e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Impossibile tornare alla Home.");
         }
     }

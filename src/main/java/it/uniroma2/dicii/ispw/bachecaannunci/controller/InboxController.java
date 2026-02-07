@@ -62,7 +62,7 @@ public class InboxController {
 
             // 3. Inizializza il controller di destinazione
             ChatController controller = loader.getController();
-            controller.initChat(selectedUser, 0, "Conversazione");
+            controller.initChat(selectedUser, "Conversazione");
 
             // 4. Cambia scena
             Stage stage = (Stage) usersList.getScene().getWindow();

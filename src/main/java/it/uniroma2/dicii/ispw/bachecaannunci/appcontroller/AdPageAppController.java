@@ -27,7 +27,6 @@ public class AdPageAppController {
         if (user == null) throw new DAOException("Utente non loggato.");
         DAOFactory.getAdDAO().markAsSold(adId, user.getUsername());
 
-        // 2. INVIA NOTIFICA MANUALE (Perché nella Demo non ci sono i trigger)
         String testoNotifica = "Complimenti! Hai venduto l'oggetto con ID " + adId;
         DAOFactory.getNotificationDAO().addNotification(user.getUsername(), testoNotifica);
 

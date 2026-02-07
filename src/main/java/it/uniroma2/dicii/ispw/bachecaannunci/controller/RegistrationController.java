@@ -112,7 +112,7 @@ public class RegistrationController {
             stage.setScene(new Scene(root));
             stage.show();
         } catch (IOException e) {
-            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Impossibile tornare alla schermata di login.");
         }
     }
 

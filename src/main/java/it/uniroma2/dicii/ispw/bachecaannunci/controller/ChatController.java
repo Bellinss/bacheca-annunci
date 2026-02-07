@@ -79,8 +79,7 @@ public class ChatController {
         });
     }
 
-    // Metodo chiamato da chi apre la chat (es. AdPageController)
-    public void initChat(String seller, int adId, String adTitle) {
+    public void initChat(String seller, String adTitle) {
         this.otherUsername = seller;
         if (headerLabel != null) {
             headerLabel.setText("Chat con " + seller + " - " + adTitle);
@@ -129,7 +128,7 @@ public class ChatController {
             Stage stage = (Stage) backButton.getScene().getWindow();
             stage.setScene(new Scene(root));
         } catch (IOException e) {
-            e.printStackTrace();
+            showAlert("Errore caricamento pagina precedente: " + e.getMessage());
         }
     }
 

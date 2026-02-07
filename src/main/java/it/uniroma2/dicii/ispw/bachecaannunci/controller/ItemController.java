@@ -55,7 +55,6 @@ public class ItemController {
             stage.setScene(new Scene(root));
 
         } catch (IOException e) {
-            e.printStackTrace();
             System.err.println("Errore apertura annuncio: " + e.getMessage());
         }
     }

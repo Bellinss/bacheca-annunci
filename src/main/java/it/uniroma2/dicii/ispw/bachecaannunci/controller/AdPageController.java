@@ -195,11 +195,11 @@ public class AdPageController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/chat.fxml"));
             Parent root = loader.load();
             ChatController chatController = loader.getController();
-            chatController.initChat(currentAnnuncio.getVenditore(), currentAnnuncio.getId(), currentAnnuncio.getTitolo());
+            chatController.initChat(currentAnnuncio.getVenditore(), currentAnnuncio.getTitolo());
             Stage stage = (Stage) contactButton.getScene().getWindow();
             stage.setScene(new Scene(root));
         } catch (IOException e) {
-            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Errore apertura chat: " + e.getMessage());
         }
     }
 
@@ -211,7 +211,7 @@ public class AdPageController {
                 followButton.setDisable(true);
             }
         } catch (DAOException e) {
-            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Errore: " + e.getMessage());
         }
     }
 
@@ -229,7 +229,7 @@ public class AdPageController {
             Stage stage = (Stage) (backButton != null ? backButton : titleLabel).getScene().getWindow();
             stage.setScene(new Scene(root));
         } catch (IOException e) {
-            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Errore: " + e.getMessage());
         }
     }
 

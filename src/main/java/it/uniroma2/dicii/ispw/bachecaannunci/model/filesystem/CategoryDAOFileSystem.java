@@ -7,19 +7,25 @@ import it.uniroma2.dicii.ispw.bachecaannunci.utils.Config;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class CategoryDAOFileSystem implements CategoryDAO {
 
+    private static final Logger LOGGER = Logger.getLogger(CategoryDAOFileSystem.class.getName());
     private static final String FILE_NAME = Config.FILE_PATH + "categories.ser";
 
     public CategoryDAOFileSystem() {
         File folder = new File(Config.FILE_PATH);
         if (!folder.exists()) {
-            folder.mkdirs();
+            if (folder.mkdirs()) {
+                LOGGER.info("Cartella per file creata: " + Config.FILE_PATH);
+            } else {
+                LOGGER.warning("Impossibile creare la cartella per file: " + Config.FILE_PATH);
+            }
         }
 
         // Inizializza con categorie di default se il file non esiste
-        // (Così la demo è subito utilizzabile)
         File file = new File(FILE_NAME);
         if (!file.exists()) {
             List<String> defaults = new ArrayList<>();
@@ -31,7 +37,7 @@ public class CategoryDAOFileSystem implements CategoryDAO {
             try {
                 save(defaults);
             } catch (DAOException e) {
-                e.printStackTrace();
+                LOGGER.log(Level.SEVERE, "Errore salvataggio categorie di default", e);
             }
         }
     }

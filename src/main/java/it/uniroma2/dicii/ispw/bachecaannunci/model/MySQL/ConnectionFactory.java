@@ -1,15 +1,17 @@
 package it.uniroma2.dicii.ispw.bachecaannunci.model.MySQL;
 
 import it.uniroma2.dicii.ispw.bachecaannunci.model.domain.Role;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ConnectionFactory {
+    private static final Logger LOGGER = Logger.getLogger(ConnectionFactory.class.getName());
     private static Connection connection;
     private ConnectionFactory() {}
 
@@ -27,7 +29,7 @@ public class ConnectionFactory {
 
             connection = DriverManager.getConnection(connection_url, user, pass);
         } catch (IOException | SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Errore durante l'inizializzazione della Connection", e);
         }
     }
 
@@ -52,7 +54,7 @@ public class ConnectionFactory {
 
             connection = DriverManager.getConnection(connection_url, user, pass);
         } catch (IOException | SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Errore durante il cambio ruolo della Connection", e);
         }
     }
 }
