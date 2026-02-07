@@ -72,14 +72,11 @@ public class AdDAOFileSystem implements AdDAO {
             try (FileInputStream in = new FileInputStream(file)) {
                 props.load(in);
                 String lastIdStr = props.getProperty("last_ad_id");
+
                 if (lastIdStr != null) {
-                    try {
-                        int lastId = Integer.parseInt(lastIdStr);
-                        nextId = lastId + 1; // Incrementa
-                    } catch (NumberFormatException e) {
-                        nextId = 1; // Fallback se il file è corrotto
-                    }
+                    nextId = parseNextId(lastIdStr);
                 }
+
             } catch (IOException e) {
                 throw new DAOException("Errore lettura contatori: " + e.getMessage());
             }
@@ -96,6 +93,13 @@ public class AdDAOFileSystem implements AdDAO {
         return nextId;
     }
 
+    private int parseNextId(String lastIdStr) {
+        try {
+            return Integer.parseInt(lastIdStr) + 1;
+        } catch (NumberFormatException e) {
+            return 1; // Fallback se il file è corrotto
+        }
+    }
 
     // -----------------------------------------------------------------
     // IMPLEMENTAZIONE INTERFACCIA AdDAO
@@ -153,14 +157,14 @@ public class AdDAOFileSystem implements AdDAO {
         return allAds.stream()
                 .filter(a -> a.getTitolo().toLowerCase().contains(lowerQuery) ||
                         a.getDescrizione().toLowerCase().contains(lowerQuery))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
     public List<AnnuncioBean> findByCategory(String categoria) throws DAOException {
         return loadAds().stream()
                 .filter(a -> a.getCategoria().equalsIgnoreCase(categoria))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -186,14 +190,14 @@ public class AdDAOFileSystem implements AdDAO {
         Set<Integer> followedIds = follows.getOrDefault(username, new HashSet<>());
         if (followedIds.isEmpty()) return new ArrayList<>();
         List<AnnuncioBean> allAds = loadAds();
-        return allAds.stream().filter(a -> followedIds.contains(a.getId())).collect(Collectors.toList());
+        return allAds.stream().filter(a -> followedIds.contains(a.getId())).toList();
     }
 
     @Override
     public List<AnnuncioBean> findFollowedByCategory(String username, String categoria) throws DAOException {
         return findFollowedAds(username).stream()
                 .filter(a -> a.getCategoria().equalsIgnoreCase(categoria))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override

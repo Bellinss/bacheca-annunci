@@ -12,9 +12,9 @@ import java.util.stream.Collectors;
 
 public class AdDAOInMemory implements AdDAO {
 
-    private static final List<AnnuncioBean> ads = new ArrayList<>();
+    private final List<AnnuncioBean> ads = new ArrayList<>();
     private static final Map<String, List<Integer>> followingMap = new HashMap<>();
-    private static int idCounter = 1;
+    private int idCounter = 1;
 
     @Override
     public void createAd(String titolo, double prezzo, String descrizione, String utente, String categoria) throws DAOException {
@@ -40,14 +40,14 @@ public class AdDAOInMemory implements AdDAO {
         return ads.stream()
                 .filter(a -> a.getTitolo().toLowerCase().contains(lowerQuery) ||
                         a.getDescrizione().toLowerCase().contains(lowerQuery))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
     public List<AnnuncioBean> findByCategory(String categoria) throws DAOException {
         return ads.stream()
                 .filter(a -> a.getCategoria().equalsIgnoreCase(categoria))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -83,14 +83,14 @@ public class AdDAOInMemory implements AdDAO {
     public List<AnnuncioBean> findFollowedAds(String username) throws DAOException {
         if (!followingMap.containsKey(username)) return new ArrayList<>();
         List<Integer> ids = followingMap.get(username);
-        return ads.stream().filter(a -> ids.contains(a.getId())).collect(Collectors.toList());
+        return ads.stream().filter(a -> ids.contains(a.getId())).toList();
     }
 
     @Override
     public List<AnnuncioBean> findFollowedByCategory(String username, String categoria) throws DAOException {
         return findFollowedAds(username).stream()
                 .filter(a -> a.getCategoria().equalsIgnoreCase(categoria))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
