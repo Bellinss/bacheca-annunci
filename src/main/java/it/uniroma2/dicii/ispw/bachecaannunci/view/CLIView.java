@@ -26,7 +26,7 @@ public class CLIView {
 
     public void run() {
         System.out.println("==========================================");
-        System.out.println("   BACHECA ELETTRONICA DI ANNUNCI - CLI   " + "(" + Config.mode + ")");
+        System.out.println("   BACHECA ELETTRONICA DI ANNUNCI - CLI   " + "(" + Config.getMode() + ")");
         System.out.println("==========================================");
 
         boolean running = true;

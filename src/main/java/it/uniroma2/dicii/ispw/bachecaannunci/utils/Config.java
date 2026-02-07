@@ -9,7 +9,15 @@ public class Config {
     }
 
     // Default: IN_MEMORY
-    public static PersistenceMode mode = PersistenceMode.IN_MEMORY;
+    private static PersistenceMode mode = PersistenceMode.IN_MEMORY;
+
+    public static PersistenceMode getMode() {
+        return mode;
+    }
+
+    public static void setMode(PersistenceMode newMode) {
+        mode = newMode;
+    }
 
     // Cartella dove verranno salvati i file .ser (Solo per FILE_SYSTEM)
     public static final String FILE_PATH = "file_data/";

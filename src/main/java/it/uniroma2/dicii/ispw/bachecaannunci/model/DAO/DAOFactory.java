@@ -32,7 +32,7 @@ public class DAOFactory {
     // ------------------------------------------------------------------------
     public static UserDAO getUserDAO() {
         if (userDaoInstance == null) {
-            switch (Config.mode) {
+            switch (Config.getMode()) {
                 case MYSQL:
                     userDaoInstance = UserDAOMySQL.getInstance();
                     break;
@@ -52,7 +52,7 @@ public class DAOFactory {
     // ------------------------------------------------------------------------
     public static AdDAO getAdDAO() {
         if (adDaoInstance == null) {
-            switch (Config.mode) {
+            switch (Config.getMode()) {
                 case MYSQL:
                     adDaoInstance = AdDAOMySQL.getInstance();
                     break;
@@ -72,7 +72,7 @@ public class DAOFactory {
     // ------------------------------------------------------------------------
     public static CategoryDAO getCategoryDAO() {
         if (categoryDaoInstance == null) {
-            switch (Config.mode) {
+            switch (Config.getMode()) {
                 case MYSQL:
                     categoryDaoInstance = CategoryDAOMySQL.getInstance();
                     break;
@@ -92,7 +92,7 @@ public class DAOFactory {
     // ------------------------------------------------------------------------
     public static CommentDAO getCommentDAO() {
         if (commentDaoInstance == null) {
-            switch (Config.mode) {
+            switch (Config.getMode()) {
                 case MYSQL:
                     commentDaoInstance = CommentDAOMySQL.getInstance();
                     break;
@@ -112,7 +112,7 @@ public class DAOFactory {
     // ------------------------------------------------------------------------
     public static MessageDAO getMessageDAO() {
         if (messageDaoInstance == null) {
-            switch (Config.mode) {
+            switch (Config.getMode()) {
                 case MYSQL:
                     messageDaoInstance = MessageDAOMySQL.getInstance();
                     break;
@@ -132,7 +132,7 @@ public class DAOFactory {
     // ------------------------------------------------------------------------
     public static NoteDAO getNoteDAO() {
         if (noteDaoInstance == null) {
-            switch (Config.mode) {
+            switch (Config.getMode()) {
                 case MYSQL:
                     noteDaoInstance = NoteDAOMySQL.getInstance();
                     break;
@@ -152,7 +152,7 @@ public class DAOFactory {
     // ------------------------------------------------------------------------
     public static NotificationDAO getNotificationDAO() {
         if (notificationDaoInstance == null) {
-            switch (Config.mode) {
+            switch (Config.getMode()) {
                 case MYSQL:
                     notificationDaoInstance = NotificationDAOMySQL.getInstance();
                     break;
@@ -172,7 +172,7 @@ public class DAOFactory {
     // ------------------------------------------------------------------------
     public static ReportDAO getReportDAO() {
         if (reportDaoInstance == null) {
-            switch (Config.mode) {
+            switch (Config.getMode()) {
                 case MYSQL:
                     reportDaoInstance = ReportDAOMySQL.getInstance();
                     break;

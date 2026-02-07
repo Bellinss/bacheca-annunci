@@ -32,9 +32,7 @@ class BachecaTest {
 
     @BeforeEach
     void setUp() {
-        // Usiamo la memoria volatile per i test
-        // Così non sporchiamo il DB reale o il File System
-        Config.mode = Config.PersistenceMode.IN_MEMORY;
+        Config.setMode(Config.PersistenceMode.IN_MEMORY);
 
         // Inizializzazione dei controller
         loginController = new LoginAppController();
