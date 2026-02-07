@@ -16,7 +16,6 @@ public class AdminAppController {
     }
 
     public void logout() {
-        // Logica di sessione per il logout
         Session.getInstance().setLoggedUser(null);
     }
 }
