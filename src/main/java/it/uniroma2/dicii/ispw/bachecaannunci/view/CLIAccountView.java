@@ -16,7 +16,6 @@ import java.util.Scanner;
 import java.util.regex.Pattern;
 
 public class CLIAccountView {
-    // ... (Il resto delle variabili e costruttore rimangono uguali) ...
     private final Scanner scanner;
     private final LoginAppController loginController = new LoginAppController();
     private final RegistrationAppController regController = new RegistrationAppController();
