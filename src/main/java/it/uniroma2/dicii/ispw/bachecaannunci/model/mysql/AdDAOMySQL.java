@@ -54,7 +54,7 @@ public class AdDAOMySQL implements AdDAO {
     public List<AnnuncioBean> findAll() throws DAOException {
         List<AnnuncioBean> annunci = new ArrayList<>();
         // Logica di Business: mostriamo solo quelli disponibili
-        String sql = "SELECT * FROM annunci WHERE stato = 'disponibile'";
+        String sql = "SELECT codice, titolo, importo, descrizione, venditore, categoria, stato FROM annunci WHERE stato = 'disponibile'";
 
         try {
             Connection conn = ConnectionFactory.getConnection();
@@ -143,7 +143,7 @@ public class AdDAOMySQL implements AdDAO {
     public List<AnnuncioBean> findByString(String queryText) throws DAOException {
         List<AnnuncioBean> risultati = new ArrayList<>();
         // Cerca testo nel titolo o descrizione, solo annunci disponibili
-        String sql = "SELECT * FROM annunci WHERE (titolo LIKE ? OR descrizione LIKE ?) AND stato = 'disponibile'";
+        String sql = "SELECT codice, titolo, importo, descrizione, venditore, categoria, stato FROM annunci WHERE (titolo LIKE ? OR descrizione LIKE ?) AND stato = 'disponibile'";
 
         try {
             Connection conn = ConnectionFactory.getConnection();
@@ -229,7 +229,7 @@ public class AdDAOMySQL implements AdDAO {
     @Override
     public List<AnnuncioBean> findByCategory(String categoria) throws DAOException {
         List<AnnuncioBean> risultati = new ArrayList<>();
-        String sql = "SELECT * FROM annunci WHERE categoria = ? AND stato = 'disponibile'";
+        String sql = "SELECT codice, titolo, importo, descrizione, venditore, categoria, stato FROM annunci WHERE categoria = ? AND stato = 'disponibile'";
 
         try {
             Connection conn = ConnectionFactory.getConnection();

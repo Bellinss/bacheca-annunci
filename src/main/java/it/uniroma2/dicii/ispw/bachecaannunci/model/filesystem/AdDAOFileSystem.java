@@ -8,7 +8,6 @@ import it.uniroma2.dicii.ispw.bachecaannunci.utils.Config;
 
 import java.io.*;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class AdDAOFileSystem implements AdDAO {
 

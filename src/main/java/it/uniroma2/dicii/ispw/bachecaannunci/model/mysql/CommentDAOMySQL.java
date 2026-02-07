@@ -27,7 +27,7 @@ public class CommentDAOMySQL implements CommentDAO {
     @Override
     public List<CommentBean> retrieveComments(int adId) throws DAOException {
         List<CommentBean> comments = new ArrayList<>();
-        String sql = "SELECT * FROM commenti WHERE id_annuncio = ?";
+        String sql = "SELECT id, testo, id_annuncio FROM commenti WHERE id_annuncio = ?";
 
         try {
             Connection conn = ConnectionFactory.getConnection();

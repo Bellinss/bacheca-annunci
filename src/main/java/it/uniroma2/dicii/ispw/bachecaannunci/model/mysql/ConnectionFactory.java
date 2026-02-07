@@ -23,9 +23,9 @@ public class ConnectionFactory {
             Properties properties = new Properties();
             properties.load(input);
 
-            String connection_url = properties.getProperty("CONNECTION_URL");
-            String user = properties.getProperty("LOGIN_USER");
-            String pass = properties.getProperty("LOGIN_PASS");
+            String connection_url = properties.getProperty("connection_url");
+            String user = properties.getProperty("login_user");
+            String pass = properties.getProperty("login_pass");
 
             connection = DriverManager.getConnection(connection_url, user, pass);
         } catch (IOException | SQLException e) {
@@ -33,7 +33,7 @@ public class ConnectionFactory {
         }
     }
 
-    public static Connection getConnection() throws SQLException {
+    public static Connection getConnection() {
         return connection;
     }
 
@@ -47,10 +47,10 @@ public class ConnectionFactory {
             Properties properties = new Properties();
             properties.load(input);
 
-            String connection_url = properties.getProperty("CONNECTION_URL");
-            String user = properties.getProperty(role.name() + "_USER");
+            String connection_url = properties.getProperty("connection_url");
+            String user = properties.getProperty(role.name() + "_user");
             System.out.println(role.name());
-            String pass = properties.getProperty(role.name() + "_PASS");
+            String pass = properties.getProperty(role.name() + "_pass");
 
             connection = DriverManager.getConnection(connection_url, user, pass);
         } catch (IOException | SQLException e) {
