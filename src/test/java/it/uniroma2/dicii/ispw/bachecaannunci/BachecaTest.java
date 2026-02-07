@@ -6,7 +6,7 @@ import it.uniroma2.dicii.ispw.bachecaannunci.appcontroller.SellAppController;
 import it.uniroma2.dicii.ispw.bachecaannunci.controller.Session;
 import it.uniroma2.dicii.ispw.bachecaannunci.exception.DAOException;
 import it.uniroma2.dicii.ispw.bachecaannunci.exception.ValidationException;
-import it.uniroma2.dicii.ispw.bachecaannunci.model.DAO.DAOFactory;
+import it.uniroma2.dicii.ispw.bachecaannunci.model.dao.DAOFactory;
 import it.uniroma2.dicii.ispw.bachecaannunci.model.domain.AnnuncioBean;
 import it.uniroma2.dicii.ispw.bachecaannunci.model.domain.Credentials;
 import it.uniroma2.dicii.ispw.bachecaannunci.model.domain.NoteBean;

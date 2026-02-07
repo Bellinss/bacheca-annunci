@@ -1,7 +1,7 @@
 package it.uniroma2.dicii.ispw.bachecaannunci.model.filesystem;
 
 import it.uniroma2.dicii.ispw.bachecaannunci.exception.DAOException;
-import it.uniroma2.dicii.ispw.bachecaannunci.model.DAO.UserDAO; // L'interfaccia creata prima
+import it.uniroma2.dicii.ispw.bachecaannunci.model.dao.UserDAO; // L'interfaccia creata prima
 import it.uniroma2.dicii.ispw.bachecaannunci.model.domain.Credentials;
 import it.uniroma2.dicii.ispw.bachecaannunci.model.domain.Role;
 import it.uniroma2.dicii.ispw.bachecaannunci.model.domain.UserBean;

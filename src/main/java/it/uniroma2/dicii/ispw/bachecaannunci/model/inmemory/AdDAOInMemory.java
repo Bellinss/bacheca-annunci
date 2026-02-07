@@ -1,7 +1,7 @@
 package it.uniroma2.dicii.ispw.bachecaannunci.model.inmemory;
 
 import it.uniroma2.dicii.ispw.bachecaannunci.exception.DAOException;
-import it.uniroma2.dicii.ispw.bachecaannunci.model.DAO.AdDAO;
+import it.uniroma2.dicii.ispw.bachecaannunci.model.dao.AdDAO;
 import it.uniroma2.dicii.ispw.bachecaannunci.model.domain.AnnuncioBean;
 
 import java.util.ArrayList;

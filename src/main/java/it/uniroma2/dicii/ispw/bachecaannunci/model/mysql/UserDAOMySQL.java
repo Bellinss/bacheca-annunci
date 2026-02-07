@@ -1,7 +1,7 @@
-package it.uniroma2.dicii.ispw.bachecaannunci.model.MySQL;
+package it.uniroma2.dicii.ispw.bachecaannunci.model.mysql;
 
 import it.uniroma2.dicii.ispw.bachecaannunci.exception.DAOException;
-import it.uniroma2.dicii.ispw.bachecaannunci.model.DAO.UserDAO;
+import it.uniroma2.dicii.ispw.bachecaannunci.model.dao.UserDAO;
 import it.uniroma2.dicii.ispw.bachecaannunci.model.domain.Credentials;
 import it.uniroma2.dicii.ispw.bachecaannunci.model.domain.Role;
 import it.uniroma2.dicii.ispw.bachecaannunci.model.domain.UserBean;

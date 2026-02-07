@@ -2,7 +2,7 @@ package it.uniroma2.dicii.ispw.bachecaannunci.model.filesystem;
 
 import it.uniroma2.dicii.ispw.bachecaannunci.controller.Session;
 import it.uniroma2.dicii.ispw.bachecaannunci.exception.DAOException;
-import it.uniroma2.dicii.ispw.bachecaannunci.model.DAO.AdDAO;
+import it.uniroma2.dicii.ispw.bachecaannunci.model.dao.AdDAO;
 import it.uniroma2.dicii.ispw.bachecaannunci.model.domain.AnnuncioBean;
 import it.uniroma2.dicii.ispw.bachecaannunci.utils.Config;
 

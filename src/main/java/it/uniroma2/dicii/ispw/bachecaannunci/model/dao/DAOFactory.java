@@ -1,13 +1,12 @@
-package it.uniroma2.dicii.ispw.bachecaannunci.model.DAO;
+package it.uniroma2.dicii.ispw.bachecaannunci.model.dao;
 
 // Import delle Interfacce
-import it.uniroma2.dicii.ispw.bachecaannunci.model.DAO.*;
 
 // Import delle implementazioni File System
 import it.uniroma2.dicii.ispw.bachecaannunci.model.filesystem.*;
 
 // Import delle implementazioni MySQL
-import it.uniroma2.dicii.ispw.bachecaannunci.model.MySQL.*;
+import it.uniroma2.dicii.ispw.bachecaannunci.model.mysql.*;
 
 // Import della Configurazione
 import it.uniroma2.dicii.ispw.bachecaannunci.model.inmemory.*;

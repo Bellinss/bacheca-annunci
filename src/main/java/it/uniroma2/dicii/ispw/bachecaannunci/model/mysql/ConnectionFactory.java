@@ -1,4 +1,4 @@
-package it.uniroma2.dicii.ispw.bachecaannunci.model.MySQL;
+package it.uniroma2.dicii.ispw.bachecaannunci.model.mysql;
 
 import it.uniroma2.dicii.ispw.bachecaannunci.model.domain.Role;
 import java.io.IOException;

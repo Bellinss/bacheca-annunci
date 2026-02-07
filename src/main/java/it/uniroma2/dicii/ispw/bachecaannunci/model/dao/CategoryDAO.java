@@ -1,4 +1,4 @@
-package it.uniroma2.dicii.ispw.bachecaannunci.model.DAO;
+package it.uniroma2.dicii.ispw.bachecaannunci.model.dao;
 
 import it.uniroma2.dicii.ispw.bachecaannunci.exception.DAOException;
 import java.util.List;

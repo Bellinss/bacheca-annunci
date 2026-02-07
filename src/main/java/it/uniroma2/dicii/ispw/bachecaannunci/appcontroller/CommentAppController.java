@@ -1,7 +1,7 @@
 package it.uniroma2.dicii.ispw.bachecaannunci.appcontroller;
 
 import it.uniroma2.dicii.ispw.bachecaannunci.exception.DAOException;
-import it.uniroma2.dicii.ispw.bachecaannunci.model.DAO.DAOFactory;
+import it.uniroma2.dicii.ispw.bachecaannunci.model.dao.DAOFactory;
 import it.uniroma2.dicii.ispw.bachecaannunci.model.domain.CommentBean;
 
 import java.util.List;

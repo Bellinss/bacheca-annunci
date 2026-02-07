@@ -1,7 +1,7 @@
 package it.uniroma2.dicii.ispw.bachecaannunci.model.filesystem;
 
 import it.uniroma2.dicii.ispw.bachecaannunci.exception.DAOException;
-import it.uniroma2.dicii.ispw.bachecaannunci.model.DAO.CommentDAO;
+import it.uniroma2.dicii.ispw.bachecaannunci.model.dao.CommentDAO;
 import it.uniroma2.dicii.ispw.bachecaannunci.model.domain.CommentBean;
 import it.uniroma2.dicii.ispw.bachecaannunci.utils.Config;
 
