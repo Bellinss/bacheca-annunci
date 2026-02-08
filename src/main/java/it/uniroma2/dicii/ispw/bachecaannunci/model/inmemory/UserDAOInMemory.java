@@ -20,15 +20,19 @@ public class UserDAOInMemory implements UserDAO {
         // Admin predefinito
         UserBean admin = new UserBean(
                 "admin", "admin", "Super", "Admin",
-                Date.valueOf("1990-01-01"), "Roma", "Roma", "Email", "admin@bacheca.it"
+                Date.valueOf("1990-01-01"), "Email", "admin@bacheca.it"
         );
+        admin.setResidenza("Roma");
+        admin.setFatturazione("Roma");
         users.add(admin);
 
         // Utente predefinito
         UserBean user = new UserBean(
                 "mario", "rossi", "Mario", "Rossi",
-                Date.valueOf("1995-05-20"), "Milano", "Milano", "Telefono", "3331234567"
+                Date.valueOf("1995-05-20"), "Telefono", "3331234567"
         );
+        user.setResidenza("Milano");
+        user.setFatturazione("Milano");
         users.add(user);
     }
 

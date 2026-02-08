@@ -29,7 +29,7 @@ public class ReportBean implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("Utente: %s\nVenduti: %d/%d%nSuccesso: %.2f%%",
+        return String.format("Utente: %s%nAnnunci Tot: %d%nVenduti: %d%nSuccesso: %.2f%%",
                 username, annunciVenduti, annunciTotali, percentuale);
     }
 }
