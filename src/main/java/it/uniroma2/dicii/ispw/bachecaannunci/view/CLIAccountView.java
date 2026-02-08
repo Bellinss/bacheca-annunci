@@ -26,6 +26,7 @@ public class CLIAccountView {
     private static final String EMAIL_REGEX = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$";
     private static final String PHONE_REGEX = "^\\d{3}-\\d{3}-\\d{4}$";
     private static final String NAME_REGEX = "^[a-zA-Z\\s']+$";
+    private static final String ERR_MANDATORY_FIELD = "ERRORE: Il campo '%s' è obbligatorio.";
 
     public CLIAccountView(Scanner scanner) {
         this.scanner = scanner;
@@ -85,24 +86,27 @@ public class CLIAccountView {
         String residenza = getValidAddress("Indirizzo di Residenza", true);
         String fatturazione = getValidAddress("Indirizzo di Fatturazione", false);
 
-        String tipoRecapito;
-        String recapito;
-        while (true) {
+        String tipoRecapito = null;
+        String recapito = null;
+        boolean sceltaValida = false;
+
+        while (!sceltaValida) {
             System.out.println("Scegli il tipo di recapito:");
             System.out.println("1. Email");
             System.out.println("2. Cellulare");
             System.out.print("> ");
             String scelta = scanner.nextLine();
+
             if (scelta.equals("1")) {
                 tipoRecapito = "Email";
                 recapito = getValidEmail();
-                break;
+                sceltaValida = true;
             } else if (scelta.equals("2")) {
                 tipoRecapito = "Cellulare";
                 recapito = getValidPhone();
-                break;
+                sceltaValida = true;
             } else {
-                System.out.println("Scelta non valida.");
+                System.out.println("Scelta non valida, riprova.");
             }
         }
 
@@ -138,7 +142,7 @@ public class CLIAccountView {
             System.out.print(fieldName + ": ");
             String input = scanner.nextLine().trim();
             if (input.isEmpty()) {
-                System.out.println("ERRORE: Il campo '" + fieldName + "' è obbligatorio.");
+                System.out.printf(ERR_MANDATORY_FIELD + "%n", fieldName);
                 continue;
             }
             if (Pattern.matches(NAME_REGEX, input)) return capitalize(input);
@@ -151,7 +155,7 @@ public class CLIAccountView {
             System.out.print(fieldName + ": ");
             String input = scanner.nextLine().trim();
             if (!input.isEmpty()) return input;
-            System.out.println("ERRORE: Il campo '" + fieldName + "' è obbligatorio.");
+            System.out.printf(ERR_MANDATORY_FIELD + "%n", fieldName);
         }
     }
 
@@ -162,17 +166,22 @@ public class CLIAccountView {
             try {
                 LocalDate birthDate = LocalDate.parse(input);
                 LocalDate today = LocalDate.now();
-                if (birthDate.isAfter(today)) {
-                    System.out.println("ERRORE: La data di nascita non può essere nel futuro.");
-                    continue;
-                }
+
                 int age = Period.between(birthDate, today).getYears();
-                if (age < 18) {
+
+                if (birthDate.isAfter(today)) {
+                    // CASO 1: Data futura -> Errore
+                    System.out.println("ERRORE: La data di nascita non può essere nel futuro.");
+                } else if (age < 18) {
+                    // CASO 2: Minorenne -> Errore
                     System.out.println("ERRORE: Devi essere maggiorenne (Età: " + age + ").");
-                    continue;
+                } else {
+                    // CASO 3: Tutto OK -> Ritorna la data (ed esce dal ciclo)
+                    return Date.valueOf(birthDate);
                 }
-                return Date.valueOf(birthDate);
+
             } catch (DateTimeParseException e) {
+                // CASO 4: Formato errato -> Errore
                 System.out.println("ERRORE: Formato data non valido. Usa yyyy-mm-dd.");
             }
         }
@@ -185,7 +194,7 @@ public class CLIAccountView {
             String input = scanner.nextLine().trim();
             if (!isMandatory && input.isEmpty()) return "Non specificata";
             if (isMandatory && input.isEmpty()) {
-                System.out.println("ERRORE: Il campo '" + fieldName + "' è obbligatorio.");
+                System.out.printf(ERR_MANDATORY_FIELD + "%n", fieldName);
                 continue;
             }
             if (input.length() > MAX_ADDRESS_LENGTH) {

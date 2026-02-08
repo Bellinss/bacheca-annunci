@@ -27,7 +27,7 @@ public class NotificationDAOMySQL implements NotificationDAO {
     @Override
     public List<NotificationBean> retrieveNotifications(String username) throws DAOException {
         List<NotificationBean> list = new ArrayList<>();
-        String sql = "SELECT * FROM notifiche WHERE username = ? ORDER BY data DESC";
+        String sql = "SELECT codice, username, data, testo FROM notifiche WHERE username = ? ORDER BY data DESC";
 
         try {
             Connection conn = ConnectionFactory.getConnection();

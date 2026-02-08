@@ -6,7 +6,6 @@ import it.uniroma2.dicii.ispw.bachecaannunci.model.domain.CommentBean;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class CommentDAOInMemory implements CommentDAO {
     private final List<CommentBean> comments = new ArrayList<>();

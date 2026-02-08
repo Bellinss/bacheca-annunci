@@ -69,7 +69,7 @@ public class NoteDAOMySQL implements NoteDAO {
         // Query 1: Controllo proprietario
         String checkOwnerSql = "SELECT venditore FROM annunci WHERE codice = ?";
         // Query 2: Recupero note
-        String getNotesSql = "SELECT * FROM note WHERE id_annuncio = ?";
+        String getNotesSql = "SELECT id, testo, id_annuncio FROM note WHERE id_annuncio = ?";
 
         try {
             Connection conn = ConnectionFactory.getConnection();

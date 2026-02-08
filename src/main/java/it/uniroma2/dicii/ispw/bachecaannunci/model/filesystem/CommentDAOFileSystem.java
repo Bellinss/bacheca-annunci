@@ -8,7 +8,6 @@ import it.uniroma2.dicii.ispw.bachecaannunci.utils.Config;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class CommentDAOFileSystem implements CommentDAO {
 

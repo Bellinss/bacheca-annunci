@@ -24,82 +24,113 @@ public class CLIAdDetailsView {
     public void run(AnnuncioBean ad) {
         boolean inDetails = true;
         while (inDetails) {
-            System.out.println("\n===== DETTAGLIO ANNUNCIO =====");
-            System.out.println("TITOLO: " + ad.getTitolo());
-            System.out.println("PREZZO: " + ad.getImporto() + " €");
-            System.out.println("VENDITORE: " + ad.getVenditore());
-            System.out.println("DESCRIZIONE: " + ad.getDescrizione());
-            System.out.println("================================");
+            printAdHeader(ad);
 
             boolean isOwner = adPageController.isOwner(ad.getVenditore());
+            boolean isFollowing = checkIsFollowing(isOwner, ad.getId());
 
-            // Controlla se segue già l'annuncio
-            boolean isFollowing = false;
-            try {
-                if (!isOwner) {
-                    isFollowing = adPageController.isFollowing(ad.getId());
-                }
-            } catch (DAOException e) {
-                isFollowing = false;
-            }
-
-            System.out.println("AZIONI:");
-            System.out.println("1. Visualizza Commenti");
-
-            // --- MENU DINAMICO ---
-            if (isOwner) {
-                // Solo il proprietario vede l'opzione note
-                System.out.println("2. Gestione NOTE (Privato)");
-                System.out.println("3. Segna come VENDUTO");
-            } else {
-                // Gli altri vedono opzioni di contatto
-                System.out.println("2. Contatta Venditore");
-                System.out.println("3. Aggiungi Commento");
-
-                if (isFollowing) {
-                    System.out.println("4. (Annuncio già presente nei preferiti)");
-                } else {
-                    System.out.println("4. Segui Annuncio");
-                }
-            }
-            System.out.println("0. Indietro");
-            System.out.print("> ");
+            printMenu(isOwner, isFollowing);
 
             String choice = scanner.nextLine();
             try {
-                switch (choice) {
-                    case "1": showComments(ad.getId()); break;
-                    case "2":
-                        // LOGICA DI SWITCH DINAMICA
-                        if (isOwner) handleNotes(ad.getId());
-                        else messageView.openChat(ad.getVenditore());
-                        break;
-                    case "3":
-                        if (isOwner) {
-                            adPageController.markAsSold(ad.getId());
-                            System.out.println("Oggetto venduto! Ritorno alla home.");
-                            inDetails = false;
-                        } else {
-                            System.out.print("Testo commento: ");
-                            commentController.postComment(scanner.nextLine(), ad.getId());
-                            System.out.println("Commento pubblicato.");
-                        }
-                        break;
-                    case "4":
-                        if (!isOwner) {
-                            if (isFollowing) {
-                                System.out.println("--> Annuncio già presente nei preferiti!");
-                            } else {
-                                boolean res = adPageController.followAd(ad.getId());
-                                if (res) System.out.println("--> Aggiunto ai preferiti!");
-                            }
-                        }
-                        break;
-                    case "0": inDetails = false; break;
-                    default: System.out.println("Scelta non valida");
-                }
+                // La logica complessa dello switch è stata spostata in handleChoice
+                inDetails = handleChoice(choice, ad, isOwner, isFollowing);
             } catch (DAOException e) {
                 System.out.println("Errore: " + e.getMessage());
+            }
+        }
+    }
+
+    // --- METODI HELPER ---
+
+    private void printAdHeader(AnnuncioBean ad) {
+        System.out.println("\n===== DETTAGLIO ANNUNCIO =====");
+        System.out.println("TITOLO: " + ad.getTitolo());
+        System.out.println("PREZZO: " + ad.getImporto() + " €");
+        System.out.println("VENDITORE: " + ad.getVenditore());
+        System.out.println("DESCRIZIONE: " + ad.getDescrizione());
+        System.out.println("================================");
+    }
+
+    private boolean checkIsFollowing(boolean isOwner, int adId) {
+        if (isOwner) return false;
+        try {
+            return adPageController.isFollowing(adId);
+        } catch (DAOException e) {
+            return false;
+        }
+    }
+
+    private void printMenu(boolean isOwner, boolean isFollowing) {
+        System.out.println("AZIONI:");
+        System.out.println("1. Visualizza Commenti");
+        if (isOwner) {
+            System.out.println("2. Gestione NOTE (Privato)");
+            System.out.println("3. Segna come VENDUTO");
+        } else {
+            System.out.println("2. Contatta Venditore");
+            System.out.println("3. Aggiungi Commento");
+            if (isFollowing) {
+                System.out.println("4. (Annuncio già presente nei preferiti)");
+            } else {
+                System.out.println("4. Segui Annuncio");
+            }
+        }
+        System.out.println("0. Indietro");
+        System.out.print("> ");
+    }
+
+    private boolean handleChoice(String choice, AnnuncioBean ad, boolean isOwner, boolean isFollowing) throws DAOException {
+        return switch (choice) {
+            case "1" -> {
+                showComments(ad.getId());
+                yield true;
+            }
+            case "2" -> {
+                handleOption2(isOwner, ad);
+                yield true;
+            }
+            case "3" -> handleOption3(isOwner, ad);
+            case "4" -> {
+                handleOption4(isOwner, isFollowing, ad);
+                yield true;
+            }
+            case "0" -> false; // Esce dal ciclo
+            default -> {
+                System.out.println("Scelta non valida");
+                yield true;
+            }
+        };
+    }
+
+    private void handleOption2(boolean isOwner, AnnuncioBean ad) throws DAOException {
+        if (isOwner) {
+            handleNotes(ad.getId());
+        } else {
+            messageView.openChat(ad.getVenditore());
+        }
+    }
+
+    private boolean handleOption3(boolean isOwner, AnnuncioBean ad) throws DAOException {
+        if (isOwner) {
+            adPageController.markAsSold(ad.getId());
+            System.out.println("Oggetto venduto! Ritorno alla home.");
+            return false; // Torna alla home
+        } else {
+            System.out.print("Testo commento: ");
+            commentController.postComment(scanner.nextLine(), ad.getId());
+            System.out.println("Commento pubblicato.");
+            return true;
+        }
+    }
+
+    private void handleOption4(boolean isOwner, boolean isFollowing, AnnuncioBean ad) throws DAOException {
+        if (!isOwner) {
+            if (isFollowing) {
+                System.out.println("--> Annuncio già presente nei preferiti!");
+            } else {
+                boolean res = adPageController.followAd(ad.getId());
+                if (res) System.out.println("--> Aggiunto ai preferiti!");
             }
         }
     }

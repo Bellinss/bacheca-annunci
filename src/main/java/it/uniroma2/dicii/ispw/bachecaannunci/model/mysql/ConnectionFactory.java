@@ -23,11 +23,11 @@ public class ConnectionFactory {
             Properties properties = new Properties();
             properties.load(input);
 
-            String connection_url = properties.getProperty("connection_url");
-            String user = properties.getProperty("login_user");
-            String pass = properties.getProperty("login_pass");
+            String connectionUrl = properties.getProperty("CONNECTION_URL");
+            String user = properties.getProperty("LOGIN_USER");
+            String pass = properties.getProperty("LOGIN_PASS");
 
-            connection = DriverManager.getConnection(connection_url, user, pass);
+            connection = DriverManager.getConnection(connectionUrl, user, pass);
         } catch (IOException | SQLException e) {
             LOGGER.log(Level.SEVERE, "Errore durante l'inizializzazione della Connection", e);
         }
@@ -47,12 +47,12 @@ public class ConnectionFactory {
             Properties properties = new Properties();
             properties.load(input);
 
-            String connection_url = properties.getProperty("connection_url");
-            String user = properties.getProperty(role.name() + "_user");
+            String connectionUrl = properties.getProperty("CONNECTION_URL");
+            String user = properties.getProperty(role.name() + "_USER");
             System.out.println(role.name());
-            String pass = properties.getProperty(role.name() + "_pass");
+            String pass = properties.getProperty(role.name() + "_PASS");
 
-            connection = DriverManager.getConnection(connection_url, user, pass);
+            connection = DriverManager.getConnection(connectionUrl, user, pass);
         } catch (IOException | SQLException e) {
             LOGGER.log(Level.SEVERE, "Errore durante il cambio ruolo della Connection", e);
         }

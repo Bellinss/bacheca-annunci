@@ -47,11 +47,7 @@ public class UserDAOMySQL implements UserDAO {
                             throw new DAOException("Ruolo non valido nel database.");
                         }
 
-                        try {
-                            ConnectionFactory.changeRole(role);
-                        } catch (SQLException e) {
-                            throw new DAOException("Errore cambio ruolo DB: " + e.getMessage());
-                        }
+                        updateConnectionRole(role);
 
                         return new Credentials(username, password, role);
                     } else {
@@ -104,6 +100,14 @@ public class UserDAOMySQL implements UserDAO {
                 throw new DAOException("Username già esistente.");
             }
             throw new DAOException("Errore Registrazione: " + e.getMessage());
+        }
+    }
+
+    private void updateConnectionRole(Role role) throws DAOException {
+        try {
+            ConnectionFactory.changeRole(role);
+        } catch (SQLException e) {
+            throw new DAOException("Errore cambio ruolo DB: " + e.getMessage());
         }
     }
 }
