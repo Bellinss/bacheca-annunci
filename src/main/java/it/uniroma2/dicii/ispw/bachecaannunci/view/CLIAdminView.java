@@ -38,12 +38,15 @@ public class CLIAdminView {
                     if (rb != null) {
                         System.out.println("Annunci Tot: " + rb.getAnnunciTotali());
                         System.out.println("Venduti: " + rb.getAnnunciVenduti());
-                        System.out.printf("Percentuale di successo: %.2f%%\n", rb.getPercentuale());
+                        System.out.printf("Percentuale di successo: %.2f%%%n", rb.getPercentuale());
                     } else System.out.println("Nessun dato.");
                 } catch (DAOException e) { System.out.println("Errore: " + e.getMessage()); }
                 break;
             case "9": adminController.logout(); break;
-            case "0": System.exit(0);
+            case "0": System.exit(0); break;
+            default:
+                System.out.println("Scelta non valida. Riprova.");
+                break;
         }
     }
 }

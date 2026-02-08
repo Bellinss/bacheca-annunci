@@ -45,56 +45,85 @@ public class CLIHomeView {
             case "4": showNotifications(); break;
             case "5": browseAds(true); break;
             case "9": homeController.logout(); break;
-            case "0": System.exit(0);
-            default: System.out.println("Comando non valido.");
+            case "0":
+                System.exit(0);
+                break;
+            default:
+                System.out.println("Comando non valido.");
+                break;
         }
     }
 
     private void browseAds(boolean onlyFollowed) {
         try {
             System.out.println("\n--- " + (onlyFollowed ? "PREFERITI" : "LISTA ANNUNCI") + " ---");
-            List<AnnuncioBean> ads;
 
-            if (!onlyFollowed) {
-                System.out.print("Vuoi filtrare? (s/N): ");
-                if (scanner.nextLine().equalsIgnoreCase("s")) {
-                    System.out.print("Categoria (invio per tutte): ");
-                    String cat = scanner.nextLine();
-                    if (cat.isEmpty()) cat = "Tutte le categorie";
-                    System.out.print("Testo (invio per vuoto): ");
-                    String txt = scanner.nextLine();
-                    ads = homeController.filterAds(cat, txt, false);
-                } else {
-                    ads = homeController.getAllAds();
-                }
-            } else {
-                ads = homeController.filterAds("Tutte le categorie", "", true);
-            }
+            // 1. Recupero annunci
+            List<AnnuncioBean> ads = retrieveAds(onlyFollowed);
 
             if (ads.isEmpty()) {
                 System.out.println("Nessun annuncio trovato.");
                 return;
             }
 
+            // 2. Stampa annunci
             for (AnnuncioBean ad : ads) {
-                System.out.printf("[%d] %s (%.2f €) - %s\n", ad.getId(), ad.getTitolo(), ad.getImporto(), ad.getVenditore());
+                System.out.printf("[%d] %s (%.2f €) - %s%n", ad.getId(), ad.getTitolo(), ad.getImporto(), ad.getVenditore());
             }
 
-            System.out.print("\nInserisci ID annuncio per dettagli (o 0 per menu): ");
-            try {
-                int id = Integer.parseInt(scanner.nextLine());
-                if (id != 0) {
-                    // Trova l'oggetto annuncio e apri i dettagli
-                    AnnuncioBean selected = ads.stream().filter(a -> a.getId() == id).findFirst().orElse(null);
-                    if (selected != null) adDetailsView.run(selected);
-                    else System.out.println("ID non presente in questa lista.");
-                }
-            } catch (NumberFormatException e) {
-                System.out.println("ID non valido.");
-            }
+            // 3. Gestione selezione
+            handleAdSelection(ads);
 
         } catch (DAOException e) {
             System.out.println("Errore: " + e.getMessage());
+        }
+    }
+
+    // --- METODI HELPER ---
+
+    private List<AnnuncioBean> retrieveAds(boolean onlyFollowed) throws DAOException {
+        if (onlyFollowed) {
+            return homeController.filterAds("Tutte le categorie", "", true);
+        }
+
+        System.out.print("Vuoi filtrare? (s/N): ");
+        if (scanner.nextLine().equalsIgnoreCase("s")) {
+            return askFiltersAndSearch();
+        } else {
+            return homeController.getAllAds();
+        }
+    }
+
+    private List<AnnuncioBean> askFiltersAndSearch() throws DAOException {
+        System.out.print("Categoria (invio per tutte): ");
+        String cat = scanner.nextLine();
+        if (cat.isEmpty()) cat = "Tutte le categorie";
+
+        System.out.print("Testo (invio per vuoto): ");
+        String txt = scanner.nextLine();
+
+        return homeController.filterAds(cat, txt, false);
+    }
+
+    private void handleAdSelection(List<AnnuncioBean> ads) {
+        System.out.print("\nInserisci ID annuncio per dettagli (o 0 per menu): ");
+        try {
+            String input = scanner.nextLine();
+            int id = Integer.parseInt(input);
+            if (id != 0) {
+                AnnuncioBean selected = ads.stream()
+                        .filter(a -> a.getId() == id)
+                        .findFirst()
+                        .orElse(null);
+
+                if (selected != null) {
+                    adDetailsView.run(selected);
+                } else {
+                    System.out.println("ID non presente in questa lista.");
+                }
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("ID non valido.");
         }
     }
 
