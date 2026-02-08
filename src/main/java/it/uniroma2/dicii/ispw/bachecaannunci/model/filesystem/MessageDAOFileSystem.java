@@ -67,7 +67,7 @@ public class MessageDAOFileSystem implements MessageDAO {
         // IMPORTANTE: Il costruttore deve supportare sender E recipient per funzionare su file
         // Se il tuo costruttore attuale è diverso, adattalo o usa i setter.
         MessageBean msg = new MessageBean(text, date, time, sender);
-        msg.setRecipient(recipient); // Assicurati di avere questo setter o passalo nel costruttore
+        msg.setDestinatario(recipient); // Assicurati di avere questo setter o passalo nel costruttore
 
         messages.add(msg);
         save(messages);
@@ -79,8 +79,8 @@ public class MessageDAOFileSystem implements MessageDAO {
 
         // Filtra i messaggi scambiati tra ME e OTHER (in entrambe le direzioni)
         return allMessages.stream()
-                .filter(m -> (m.getSender().equals(me) && m.getRecipient().equals(other)) ||
-                        (m.getSender().equals(other) && m.getRecipient().equals(me)))
+                .filter(m -> (m.getMittente().equals(me) && m.getDestinatario().equals(other)) ||
+                        (m.getMittente().equals(other) && m.getDestinatario().equals(me)))
                 .collect(Collectors.toList());
     }
 
@@ -91,10 +91,10 @@ public class MessageDAOFileSystem implements MessageDAO {
 
         // Cerca tutti gli utenti con cui ho scambiato almeno un messaggio
         for (MessageBean m : allMessages) {
-            if (m.getSender().equals(myUsername)) {
-                interlocutori.add(m.getRecipient());
-            } else if (m.getRecipient().equals(myUsername)) {
-                interlocutori.add(m.getSender());
+            if (m.getMittente().equals(myUsername)) {
+                interlocutori.add(m.getDestinatario());
+            } else if (m.getDestinatario().equals(myUsername)) {
+                interlocutori.add(m.getMittente());
             }
         }
 

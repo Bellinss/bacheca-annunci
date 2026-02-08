@@ -33,8 +33,8 @@ public class MessageDAOInMemory implements MessageDAO {
     @Override
     public List<MessageBean> retrieveMessages(String me, String other) throws DAOException {
         return messages.stream()
-                .filter(m -> (m.getSender().equals(me) && m.getRecipient().equals(other)) ||
-                        (m.getSender().equals(other) && m.getRecipient().equals(me)))
+                .filter(m -> (m.getMittente().equals(me) && m.getDestinatario().equals(other)) ||
+                        (m.getMittente().equals(other) && m.getDestinatario().equals(me)))
                 .collect(Collectors.toList());
     }
 
@@ -42,10 +42,10 @@ public class MessageDAOInMemory implements MessageDAO {
     public List<String> getActiveConversations(String myUsername) throws DAOException {
         Set<String> contacts = new HashSet<>();
         for (MessageBean m : messages) {
-            if (m.getSender().equals(myUsername)) {
-                contacts.add(m.getRecipient());
-            } else if (m.getRecipient().equals(myUsername)) {
-                contacts.add(m.getSender());
+            if (m.getMittente().equals(myUsername)) {
+                contacts.add(m.getDestinatario());
+            } else if (m.getDestinatario().equals(myUsername)) {
+                contacts.add(m.getMittente());
             }
         }
         return new ArrayList<>(contacts);

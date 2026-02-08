@@ -131,7 +131,7 @@ public class AdPageController {
                 followButton.setDisable(true);
             }
         } catch (DAOException e) {
-            showAlert(Alert.AlertType.ERROR, "Errore: " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Errore Following: " + e.getMessage());
         }
     }
 
@@ -184,7 +184,7 @@ public class AdPageController {
                 new Alert(Alert.AlertType.INFORMATION, "Annuncio venduto con successo!").showAndWait();
                 goBack();
             } catch (DAOException e) {
-                showAlert(Alert.AlertType.ERROR, "Errore: " + e.getMessage());
+                showAlert(Alert.AlertType.ERROR, "Errore vendita: " + e.getMessage());
             }
         }
     }
@@ -229,7 +229,7 @@ public class AdPageController {
             Stage stage = (Stage) (backButton != null ? backButton : titleLabel).getScene().getWindow();
             stage.setScene(new Scene(root));
         } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR, "Errore: " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Errore Navigazione: " + e.getMessage());
         }
     }
 
