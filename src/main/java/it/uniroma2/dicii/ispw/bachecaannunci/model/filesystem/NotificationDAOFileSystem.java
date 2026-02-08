@@ -48,8 +48,8 @@ public class NotificationDAOFileSystem implements NotificationDAO {
 
         // Filtra solo le notifiche dell'utente specifico
         return all.stream()
-                .filter(n -> n.getUsername().equals(username)) // Assicurati che NotificationBean abbia getUsername()
-                .collect(Collectors.toList());
+                .filter(n -> n.getUsername().equals(username))
+                .toList();
     }
 
     @Override

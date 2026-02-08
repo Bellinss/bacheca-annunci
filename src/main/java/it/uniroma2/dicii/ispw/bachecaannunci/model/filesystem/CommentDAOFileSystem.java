@@ -48,7 +48,7 @@ public class CommentDAOFileSystem implements CommentDAO {
         // Filtra solo i commenti che appartengono all'annuncio specificato
         return allComments.stream()
                 .filter(c -> c.getIdAnnuncio() == adId) // Assicurati che CommentBean abbia il getter getIdAnnuncio()
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override

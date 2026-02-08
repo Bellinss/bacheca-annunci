@@ -65,6 +65,6 @@ public class NoteDAOFileSystem implements NoteDAO {
         // Restituisce solo le note associate a quell'annuncio
         return allNotes.stream()
                 .filter(n -> n.getIdAnnuncio() == adId)
-                .collect(Collectors.toList());
+                .toList();
     }
 }

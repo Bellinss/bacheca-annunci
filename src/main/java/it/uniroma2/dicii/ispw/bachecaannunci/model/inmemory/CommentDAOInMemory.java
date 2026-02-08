@@ -9,14 +9,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class CommentDAOInMemory implements CommentDAO {
-    private static final List<CommentBean> comments = new ArrayList<>();
-    private static int idCounter = 1;
+    private final List<CommentBean> comments = new ArrayList<>();
+    private int idCounter = 1;
 
     @Override
     public List<CommentBean> retrieveComments(int adId) throws DAOException {
         return comments.stream()
                 .filter(c -> c.getIdAnnuncio() == adId)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override

@@ -64,10 +64,8 @@ public class MessageDAOFileSystem implements MessageDAO {
         Time time = Time.valueOf(LocalTime.now());
 
         // 3. Creazione Bean
-        // IMPORTANTE: Il costruttore deve supportare sender E recipient per funzionare su file
-        // Se il tuo costruttore attuale è diverso, adattalo o usa i setter.
         MessageBean msg = new MessageBean(text, date, time, sender);
-        msg.setDestinatario(recipient); // Assicurati di avere questo setter o passalo nel costruttore
+        msg.setDestinatario(recipient);
 
         messages.add(msg);
         save(messages);
@@ -81,7 +79,7 @@ public class MessageDAOFileSystem implements MessageDAO {
         return allMessages.stream()
                 .filter(m -> (m.getMittente().equals(me) && m.getDestinatario().equals(other)) ||
                         (m.getMittente().equals(other) && m.getDestinatario().equals(me)))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override

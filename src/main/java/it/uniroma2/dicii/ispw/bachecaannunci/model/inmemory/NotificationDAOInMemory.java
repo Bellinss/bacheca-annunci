@@ -13,26 +13,15 @@ import java.util.stream.Collectors;
 public class NotificationDAOInMemory implements NotificationDAO {
 
     // "Database" volatile delle notifiche
-    private static final List<NotificationBean> notifications = new ArrayList<>();
-    private static int idCounter = 1;
-
-    // Dati di default per la Demo
-    static {
-        // Notifica di benvenuto per l'utente "mario"
-        notifications.add(new NotificationBean(
-                idCounter++,
-                "mario",
-                Timestamp.from(Instant.now()),
-                "Benvenuto nella versione Demo di Bacheca Annunci!"
-        ));
-    }
+    private final List<NotificationBean> notifications = new ArrayList<>();
+    private int idCounter = 1;
 
     @Override
     public List<NotificationBean> retrieveNotifications(String username) throws DAOException {
         // Filtra le notifiche per l'utente specifico
         return notifications.stream()
                 .filter(n -> n.getUsername().equals(username))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override

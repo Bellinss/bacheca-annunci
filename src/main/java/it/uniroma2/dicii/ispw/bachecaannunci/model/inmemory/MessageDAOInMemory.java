@@ -35,7 +35,7 @@ public class MessageDAOInMemory implements MessageDAO {
         return messages.stream()
                 .filter(m -> (m.getMittente().equals(me) && m.getDestinatario().equals(other)) ||
                         (m.getMittente().equals(other) && m.getDestinatario().equals(me)))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override

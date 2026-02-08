@@ -19,7 +19,7 @@ public class UserDAOInMemory implements UserDAO {
     static {
         // Admin predefinito
         UserBean admin = new UserBean(
-                "admin", "admin", "Super", "Admin",
+                "admin", "password", "Super", "Admin",
                 Date.valueOf("1990-01-01"), "Email", "admin@bacheca.it"
         );
         admin.setResidenza("Roma");

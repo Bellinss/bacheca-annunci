@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class NoteDAOInMemory implements NoteDAO {
-    private static final List<NoteBean> notes = new ArrayList<>();
-    private static int idCounter = 1;
+    private final List<NoteBean> notes = new ArrayList<>();
+    private int idCounter = 1;
 
     @Override
     public void createNote(String seller, String text, int adId) throws DAOException {
@@ -21,6 +21,6 @@ public class NoteDAOInMemory implements NoteDAO {
     public List<NoteBean> retrieveNotes(int adId) throws DAOException {
         return notes.stream()
                 .filter(n -> n.getIdAnnuncio() == adId)
-                .collect(Collectors.toList());
+                .toList();
     }
 }

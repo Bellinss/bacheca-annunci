@@ -16,7 +16,9 @@ public class ReportDAOFileSystem implements ReportDAO {
 
     private static final String ADS_FILE = Config.FILE_PATH + "annunci.ser";
 
-    public ReportDAOFileSystem() {}
+    public ReportDAOFileSystem() {
+        // Costruttore vuoto intenzionale
+    }
 
     // Helper per caricare gli annunci
     @SuppressWarnings("unchecked")
