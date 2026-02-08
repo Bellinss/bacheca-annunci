@@ -8,7 +8,7 @@ public class UserBean implements Serializable {
     private String password;
     private String nome;
     private String cognome;
-    private Date dataNascita; // Cambiato da LocalDate a java.sql.Date
+    private Date dataNascita;
     private String residenza;
     private String fatturazione;
     private String tipoRecapito;
@@ -19,17 +19,14 @@ public class UserBean implements Serializable {
     // 1. Costruttore Vuoto (Fondamentale per i Bean)
     public UserBean() {}
 
-    // 2. Costruttore Completo aggiornato con java.sql.Date
+    // 2. Costruttore Completo
     public UserBean(String username, String password, String nome, String cognome,
-                    Date dataNascita, String residenza, String fatturazione,
-                    String tipoRecapito, String recapito) {
+                    Date dataNascita, String tipoRecapito, String recapito) {
         this.username = username;
         this.password = password;
         this.nome = nome;
         this.cognome = cognome;
         this.dataNascita = dataNascita;
-        this.residenza = residenza;
-        this.fatturazione = fatturazione;
         this.tipoRecapito = tipoRecapito;
         this.recapito = recapito;
     }
@@ -48,7 +45,6 @@ public class UserBean implements Serializable {
     public String getCognome() { return cognome; }
     public void setCognome(String cognome) { this.cognome = cognome; }
 
-    // Getter e Setter aggiornati per Date
     public Date getDataNascita() { return dataNascita; }
     public void setDataNascita(Date dataNascita) { this.dataNascita = dataNascita; }
 

@@ -106,8 +106,9 @@ public class CLIAccountView {
             }
         }
 
-        UserBean newUser = new UserBean(user, pass, nome, cognome, dataNascita,
-                residenza, fatturazione, tipoRecapito, recapito);
+        UserBean newUser = new UserBean(user, pass, nome, cognome, dataNascita, tipoRecapito, recapito);
+        newUser.setResidenza(residenza);
+        newUser.setFatturazione(fatturazione);
 
         try {
             if (regController.registerUser(newUser)) {

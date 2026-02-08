@@ -76,7 +76,9 @@ public class RegistrationController {
 
         try {
             LocalDate data = LocalDate.parse(dataStr, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-            UserBean bean = new UserBean(user, pass, nome, cognome, java.sql.Date.valueOf(data), residenza, fatturazione, tipo, recapito);
+            UserBean bean = new UserBean(user, pass, nome, cognome, java.sql.Date.valueOf(data), tipo, recapito);
+            bean.setResidenza(residenza);
+            bean.setFatturazione(fatturazione);
 
             // --- CHIAMATA AL CONTROLLER CON GESTIONE ECCEZIONI ---
             if (appController.registerUser(bean)) {
